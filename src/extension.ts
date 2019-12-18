@@ -1,8 +1,12 @@
-import statusBarButton from './status';
-import { showFileList, showTopFile } from './commands';
+import { window } from 'vscode'
+import { showFileList, addCurrentFile, deleteFile, openFile } from './commands'
+import TreeProvider from './treeProvider'
 
 export function activate({ subscriptions }) {
-    subscriptions.push(statusBarButton);
-    subscriptions.push(showFileList());
-    subscriptions.push(showTopFile());
+    subscriptions.push(showFileList())
+    subscriptions.push(addCurrentFile())
+    subscriptions.push(deleteFile())
+    subscriptions.push(openFile())
+
+    window.registerTreeDataProvider('list', new TreeProvider())
 }

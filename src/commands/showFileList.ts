@@ -1,51 +1,44 @@
-import { commands, window, workspace, Position, Selection, TextDocument } from 'vscode';
-import { getConf } from '../utils/config';
-
+import { commands, window, workspace } from 'vscode'
+import { getConf, showDocument } from '../utils'
 
 export function showFileList() {
     return commands.registerCommand('fileShortcut.showFileList', async () => {
-        var filePaths = getConf('list') as string[] || [];
-        if (!filePaths.length){
-            window.showErrorMessage(`No config file found`);
-            return
+        let filePaths: any[] = await getConf('list')
+
+        if (!filePaths.length) {
+            return window.showErrorMessage('File Shortcut: No list found')
         }
-        if (filePaths.length > 0) {
-            showQuickPick(filePaths)
-        }
-    });
-}
 
-async function showDocument(document: TextDocument) {
-    const textEditor = await window.showTextDocument(document, { preview: false });
-
-    var lastLineIndex = document.lineCount - 1;
-
-    var lastCharRange = document.lineAt(lastLineIndex).range
-    var lastCharPosition = document.lineAt(lastLineIndex).range.end
-
-    var newSelection = new Selection(lastCharPosition, lastCharPosition);
-    textEditor.revealRange(lastCharRange, 1)
-    textEditor.selection = newSelection;
-}
-
-async function openFile(filePath: string) {
-    const fileName = filePath.split("/").pop()
-    try {
-        const document = await workspace.openTextDocument(filePath);
-        showDocument(document)
-        // window.showInformationMessage(`Success : ${filePath}`);
-    } catch (error) {
-        if (error.message.includes("cannot open file")) {
-            window.setStatusBarMessage(`$(x) File ${fileName} not found`, 2000);
-        }
-    }
+        showQuickPick(filePaths)
+    })
 }
 
 async function showQuickPick(filePaths: string[]) {
-    let i = 0;
-    const filePath = await window.showQuickPick(filePaths, {
+    // enable preview mode
+    const preview = workspace.getConfiguration('workbench.editor').get('enablePreview')
+    workspace.getConfiguration().update('workbench.editor.enablePreview', false, true)
+
+    await window.showQuickPick(filePaths, {
         placeHolder: 'Pick a file to open',
-        // onDidSelectItem: item => window.showInformationMessage(`Focus ${++i}: ${item}`)
-    });
-    openFile(filePath);
+        onDidSelectItem: async (item: string) => {
+            showDocument(item)
+        }
+    }).then((selection) => {
+        // restore preview mode
+        workspace.getConfiguration().update('workbench.editor.enablePreview', preview, true)
+
+        if (selection) {
+            return openFile(selection)
+        }
+    })
+}
+
+async function openFile(filePath: string) {
+    try {
+        showDocument(filePath)
+    } catch (error) {
+        if (error.message.includes('cannot open file')) {
+            window.showErrorMessage(`File: "${filePath}" not found`)
+        }
+    }
 }

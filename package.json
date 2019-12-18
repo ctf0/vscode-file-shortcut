@@ -1,45 +1,107 @@
 {
     "name": "file-shortcut",
     "displayName": "File Shortcut",
-    "description": "One click to open your favorite file list",
-    "icon": "file.png",
+    "description": "add/open/delete your favorite file list",
+    "icon": "img/file.png",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ejabu/vscode-file-shortcut"
+        "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
-    "publisher": "ejabudev",
-    "version": "0.3.0",
-    "enableProposedApi": false,
+    "publisher": "ctf0",
+    "version": "0.0.1",
     "engines": {
         "vscode": "^1.25.0"
     },
-    "keywords": [],
+    "keywords": [
+        "file",
+        "bookmark",
+        "shortcut"
+    ],
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onView:list",
+        "onCommand:fileShortcut.showFileList",
+        "onCommand:fileShortcut.addCurrentFile",
+        "onCommand:fileShortcut.deleteFile",
+        "onCommand:fileShortcut.openFile"
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "snippets": [],
-        "themes": [],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "file-shortcut",
+                    "title": "File Shortcut",
+                    "icon": "img/file.svg"
+                }
+            ]
+        },
+        "views": {
+            "file-shortcut": [
+                {
+                    "id": "list",
+                    "name": "Files List"
+                }
+            ]
+        },
         "commands": [
             {
                 "command": "fileShortcut.showFileList",
                 "title": "File Shortcut : Open File List"
             },
             {
-                "command": "fileShortcut.showTopFile",
-                "title": "File Shortcut : Open Top File"
-            }
-        ],
-        "keybindings": [
+                "command": "fileShortcut.addCurrentFile",
+                "title": "File Shortcut : Add Current File To List"
+            },
             {
-                "key": "meta+f",
-                "command": "fileShortcut.showTopFile"
+                "command": "fileShortcut.deleteFile",
+                "title": "File Shortcut : Delete Current/File From List",
+                "icon": "$(chrome-close)"
+            },
+            {
+                "command": "fileShortcut.openFile",
+                "title": "open file"
             }
         ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "group": "navigation",
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "!explorerResourceIsFolder"
+                },
+                {
+                    "group": "navigation",
+                    "command": "fileShortcut.deleteFile",
+                    "when": "!explorerResourceIsFolder"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "view == list && editorIsOpen"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "when": "view == list",
+                    "group": "inline"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "editorIsOpen"
+                },
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "when": "editorIsOpen"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
             "title": "File Shortcuts",
@@ -50,6 +112,7 @@
                         "type": "string"
                     },
                     "default": [],
+                    "uniqueItems": true,
                     "description": "List of favorite Files. e.g /home/user/cheatsheet.md"
                 }
             }
@@ -64,7 +127,7 @@
     },
     "devDependencies": {
         "typescript": "^3.1.4",
-        "vscode": "^1.1.25",
+        "vscode": "^1.25.0",
         "tslint": "^5.8.0",
         "@types/node": "^8.10.25",
         "@types/mocha": "^2.2.42"
