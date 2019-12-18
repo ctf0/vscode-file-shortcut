@@ -8,7 +8,7 @@
         "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
     "publisher": "ctf0",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -53,7 +53,8 @@
             },
             {
                 "command": "fileShortcut.addCurrentFile",
-                "title": "File Shortcut: Add Current File To List"
+                "title": "File Shortcut: Add Current File To List",
+                "icon": "$(add)"
             },
             {
                 "command": "fileShortcut.deleteFile",
@@ -81,7 +82,8 @@
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == list && editorIsOpen"
+                    "when": "view == list && editorIsOpen",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
