@@ -1,4 +1,4 @@
-import { workspace, window } from 'vscode'
+import {workspace, window} from 'vscode'
 
 // config
 export function getConf(key: string) {
@@ -21,4 +21,10 @@ export async function showDocument(path) {
         preview: true,
         preserveFocus: true
     })
+}
+
+export async function showMsg(txt, error = true) {
+    error
+        ? window.showErrorMessage(`File Shortcut: ${txt}`)
+        : window.showInformationMessage(`File Shortcut: ${txt}`)
 }

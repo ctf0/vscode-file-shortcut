@@ -1,32 +1,27 @@
-import { commands, window, workspace } from 'vscode'
-import { getConf, showDocument } from '../utils'
+import {commands, window} from 'vscode'
+import {getConf, showDocument, showMsg} from '../utils'
+const debounce = require('lodash.debounce')
 
 export function showFileList() {
     return commands.registerCommand('fileShortcut.showFileList', async () => {
         let filePaths: any[] = await getConf('list')
 
         if (!filePaths.length) {
-            return window.showErrorMessage('File Shortcut: No list found')
+            return showMsg('no list found')
         }
 
+        // enable preview mode
         showQuickPick(filePaths)
     })
 }
 
 async function showQuickPick(filePaths: string[]) {
-    // enable preview mode
-    const preview = workspace.getConfiguration('workbench.editor').get('enablePreview')
-    workspace.getConfiguration().update('workbench.editor.enablePreview', false, true)
-
     await window.showQuickPick(filePaths, {
         placeHolder: 'Pick a file to open',
-        onDidSelectItem: async (item: string) => {
-            showDocument(item)
-        }
+        onDidSelectItem: debounce(async function (item: string) {
+            return showDocument(item)
+        }, 300)
     }).then((selection) => {
-        // restore preview mode
-        workspace.getConfiguration().update('workbench.editor.enablePreview', preview, true)
-
         if (selection) {
             return openFile(selection)
         }
@@ -38,7 +33,7 @@ async function openFile(filePath: string) {
         showDocument(filePath)
     } catch (error) {
         if (error.message.includes('cannot open file')) {
-            window.showErrorMessage(`File: "${filePath}" not found`)
+            showMsg(`"${filePath}" not found`)
         }
     }
 }

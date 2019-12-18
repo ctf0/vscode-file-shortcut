@@ -49,15 +49,15 @@
         "commands": [
             {
                 "command": "fileShortcut.showFileList",
-                "title": "File Shortcut : Open File List"
+                "title": "File Shortcut: Open Files List"
             },
             {
                 "command": "fileShortcut.addCurrentFile",
-                "title": "File Shortcut : Add Current File To List"
+                "title": "File Shortcut: Add Current File To List"
             },
             {
                 "command": "fileShortcut.deleteFile",
-                "title": "File Shortcut : Delete Current/File From List",
+                "title": "File Shortcut: Delete Current/File From List",
                 "icon": "$(chrome-close)"
             },
             {
@@ -68,14 +68,14 @@
         "menus": {
             "explorer/context": [
                 {
-                    "group": "navigation",
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "!explorerResourceIsFolder"
+                    "when": "!explorerResourceIsFolder",
+                    "group": "myGroup@1"
                 },
                 {
-                    "group": "navigation",
                     "command": "fileShortcut.deleteFile",
-                    "when": "!explorerResourceIsFolder"
+                    "when": "!explorerResourceIsFolder",
+                    "group": "myGroup@1"
                 }
             ],
             "view/title": [
@@ -126,10 +126,13 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^3.1.4",
-        "vscode": "^1.25.0",
-        "tslint": "^5.8.0",
+        "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.25",
-        "@types/mocha": "^2.2.42"
+        "tslint": "^5.8.0",
+        "typescript": "^3.1.4",
+        "vscode": "^1.25.0"
+    },
+    "dependencies": {
+        "lodash.debounce": "^4.0.8"
     }
 }

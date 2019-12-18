@@ -1,5 +1,5 @@
 import {commands, window} from 'vscode'
-import {getConf, updateConf} from '../utils'
+import {getConf, updateConf, showMsg} from '../utils'
 
 export function deleteFile() {
     return commands.registerCommand('fileShortcut.deleteFile', async (e) => {
@@ -12,10 +12,11 @@ export function deleteFile() {
         let i = list.findIndex((item) => item == path)
 
         if (i < 0) {
-            return window.showErrorMessage('File Shortcut: File Not In List')
+            return showMsg('file not in list')
         }
 
         list.splice(i, 1)
         updateConf('list', list)
+        showMsg('file removed')
     })
 }
