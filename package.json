@@ -8,7 +8,7 @@
         "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
     "publisher": "ctf0",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -71,12 +71,31 @@
                 {
                     "command": "fileShortcut.addCurrentFile",
                     "when": "!explorerResourceIsFolder",
-                    "group": "myGroup@1"
+                    "group": "fsc@1"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
                     "when": "!explorerResourceIsFolder",
-                    "group": "myGroup@1"
+                    "group": "fsc@1"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "resourceScheme != 'untitled'",
+                    "group": "fsc@1"
+                },
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "when": "resourceScheme != 'untitled'",
+                    "group": "fsc@1"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "!inSettingsEditor && !inKeybindings && resourceScheme != 'untitled'",
+                    "group": "navigation"
                 }
             ],
             "view/title": [
@@ -96,11 +115,11 @@
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "editorIsOpen"
+                    "when": "editorIsOpen && resourceScheme != 'untitled'"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "editorIsOpen"
+                    "when": "editorIsOpen && resourceScheme != 'untitled'"
                 }
             ]
         },
@@ -130,9 +149,8 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.25",
-        "tslint": "^5.8.0",
-        "typescript": "^3.1.4",
-        "vscode": "^1.25.0"
+        "typescript": "^3.6.2",
+        "vscode": "^1.1.36"
     },
     "dependencies": {
         "lodash.debounce": "^4.0.8"

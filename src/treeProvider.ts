@@ -1,20 +1,20 @@
-import * as vscode from 'vscode'
-import { getConf, getFileName } from './utils'
+import {TreeItem, TreeDataProvider, EventEmitter, workspace, Command, ThemeIcon} from 'vscode'
+import {getConf, getFileName} from './utils'
 
-export default class TreeProvider implements vscode.TreeDataProvider<TreeFile> {
+export default class TreeProvider implements TreeDataProvider<TreeFile> {
 
-    private _onDidChangeTreeData: vscode.EventEmitter<TreeFile | undefined> = new vscode.EventEmitter<TreeFile | undefined>();
-    readonly onDidChangeTreeData: vscode.Event<TreeFile | undefined> = this._onDidChangeTreeData.event;
+    _onDidChangeTreeData = new EventEmitter()
+    onDidChangeTreeData = this._onDidChangeTreeData.event
 
     constructor() {
-        vscode.workspace.onDidChangeConfiguration((e: any) => {
+        workspace.onDidChangeConfiguration((e: any) => {
             if (e.affectsConfiguration('fileShortcut.list')) {
-                this._onDidChangeTreeData.fire();
+                this._onDidChangeTreeData.fire()
             }
         })
     }
 
-    public async getChildren(file?: TreeFile): Promise<TreeFile[]> {
+    async getChildren() {
         let files = await getConf('list')
 
         return files.map((path) => {
@@ -22,27 +22,27 @@ export default class TreeProvider implements vscode.TreeDataProvider<TreeFile> {
 
             return new TreeFile(path, name, {
                 command: 'fileShortcut.openFile',
-                title: "Execute",
+                title: 'Execute',
                 arguments: [path]
-            });
-        });
+            })
+        })
     }
 
-    getTreeItem(file: TreeFile): vscode.TreeItem {
-        return file;
+    getTreeItem(file) {
+        return file
     }
 }
 
-class TreeFile extends vscode.TreeItem {
+class TreeFile extends TreeItem {
     constructor(
-        path: string,
-        label: string,
-        command?: vscode.Command
+        path,
+        label,
+        command?: Command
     ) {
-        super(label);
-        this.id = path;
-        this.command = command;
+        super(label)
+        this.id = path
+        this.command = command
         this.tooltip = `open file "${path}"`
-        this.iconPath = vscode.ThemeIcon.File
+        this.iconPath = ThemeIcon.File
     }
 }
