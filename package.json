@@ -21,7 +21,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onView:list",
+        "onView:fs_list",
         "onCommand:fileShortcut.showFileList",
         "onCommand:fileShortcut.addCurrentFile",
         "onCommand:fileShortcut.deleteFile",
@@ -41,7 +41,7 @@
         "views": {
             "file-shortcut": [
                 {
-                    "id": "list",
+                    "id": "fs_list",
                     "name": "Files List"
                 }
             ]
@@ -101,14 +101,14 @@
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == list && editorIsOpen",
+                    "when": "view == fs_list && editorIsOpen",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "view == list",
+                    "when": "view == fs_list",
                     "group": "inline"
                 }
             ],
