@@ -8,7 +8,7 @@
         "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
     "publisher": "ctf0",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -82,26 +82,26 @@
             "editor/context": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "resourceScheme != 'untitled'",
+                    "when": "resourceScheme == 'file'",
                     "group": "fsc@1"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "resourceScheme != 'untitled'",
+                    "when": "resourceScheme == 'file'",
                     "group": "fsc@1"
                 }
             ],
             "editor/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "!inSettingsEditor && !inKeybindings && resourceScheme != 'untitled'",
+                    "when": "!inSettingsEditor && !inKeybindings && resourceScheme == 'file'",
                     "group": "navigation"
                 }
             ],
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == fs_list && editorIsOpen",
+                    "when": "view == fs_list && editorIsOpen && && resourceScheme == 'file'",
                     "group": "navigation"
                 }
             ],
@@ -115,11 +115,11 @@
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "editorIsOpen && resourceScheme != 'untitled'"
+                    "when": "editorIsOpen && resourceScheme == 'file'"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "editorIsOpen && resourceScheme != 'untitled'"
+                    "when": "editorIsOpen && resourceScheme == 'file'"
                 }
             ]
         },
