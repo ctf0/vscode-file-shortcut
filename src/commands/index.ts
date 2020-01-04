@@ -9,10 +9,6 @@ export function addCurrentFile() {
             let doc = window.activeTextEditor.document
             let path = e ? e.fsPath : doc.uri.fsPath
 
-            if (doc.isUntitled) {
-                return util.showMsg('can\'t add an "untilted" file')
-            }
-
             if (list.includes(path)) {
                 return util.showMsg('already added')
             }
