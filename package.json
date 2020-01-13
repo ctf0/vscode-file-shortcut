@@ -58,7 +58,7 @@
             },
             {
                 "command": "fileShortcut.deleteFile",
-                "title": "File Shortcut: Delete Current/File From List",
+                "title": "File Shortcut: Delete Current File From List",
                 "icon": "$(chrome-close)"
             },
             {
