@@ -8,7 +8,7 @@
         "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
     "publisher": "ctf0",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -21,6 +21,7 @@
         "Other"
     ],
     "activationEvents": [
+        "onFileSystem:file",
         "onView:fs_list",
         "onCommand:fileShortcut.showFileList",
         "onCommand:fileShortcut.addCurrentFile",
