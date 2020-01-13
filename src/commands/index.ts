@@ -17,7 +17,7 @@ export function addCurrentFile() {
             util.updateConf('list', list)
             util.showMsg('file added', false)
         } catch ({ message }) {
-            util.showMsg(message, true)
+            util.showMsg('sorry, this file type cant be added !', true)
         }
     })
 }
@@ -42,7 +42,17 @@ export function deleteFile() {
 }
 
 export function openFile() {
-    return commands.registerCommand('fileShortcut.openFile', (path) => {
+    return commands.registerCommand('fileShortcut.openFile', (path, type) => {
         util.showDocument(path)
+
+        if (type == 'treeview') {
+            let time = util.getConf('hideSidebarTimeOut')
+
+            if (time > 0) {
+                setTimeout(() => {
+                    commands.executeCommand('workbench.action.toggleSidebarVisibility')
+                }, time * 1000)
+            }
+        }
     })
 }

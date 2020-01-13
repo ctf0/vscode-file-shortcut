@@ -8,7 +8,7 @@
         "url": "https://github.com/ctf0/vscode-file-shortcut"
     },
     "publisher": "ctf0",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -82,26 +82,26 @@
             "editor/context": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "resourceScheme == 'file'",
+                    "when": "fscEnabled",
                     "group": "fsc@1"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "resourceScheme == 'file'",
+                    "when": "fscEnabled",
                     "group": "fsc@1"
                 }
             ],
             "editor/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "!inSettingsEditor && !inKeybindings && resourceScheme == 'file'",
+                    "when": "fscEnabled",
                     "group": "navigation"
                 }
             ],
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == fs_list && editorIsOpen && && resourceScheme == 'file'",
+                    "when": "view == fs_list && fscEnabled",
                     "group": "navigation"
                 }
             ],
@@ -115,17 +115,17 @@
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "editorIsOpen && resourceScheme == 'file'"
+                    "when": "fscEnabled"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "editorIsOpen && resourceScheme == 'file'"
+                    "when": "fscEnabled"
                 }
             ]
         },
         "configuration": {
-            "type": "object",
             "title": "File Shortcuts",
+            "type": "object",
             "properties": {
                 "fileShortcut.list": {
                     "type": "array",
@@ -135,6 +135,20 @@
                     "default": [],
                     "uniqueItems": true,
                     "description": "List of favorite Files. e.g /home/user/cheatsheet.md"
+                },
+                "fileShortcut.sort": {
+                    "type": "string",
+                    "default": "length",
+                    "enum": [
+                        "alpha",
+                        "length"
+                    ],
+                    "description": "sort treeview list alphabetically or by text length"
+                },
+                "fileShortcut.hideSidebarTimeOut": {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "in seconds, toggle sidebar after file is opened (0 == do nothing)\n 'only works when file is opened from treeview'"
                 }
             }
         }

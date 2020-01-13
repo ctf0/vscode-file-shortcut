@@ -1,4 +1,4 @@
-import {workspace, window} from 'vscode'
+import { workspace, window } from 'vscode'
 
 // config
 export function getConf(key: string) {
@@ -17,7 +17,7 @@ export function getFileName(path: string) {
 export async function showDocument(path) {
     let document = await workspace.openTextDocument(path)
 
-    return await window.showTextDocument(document, {
+    return window.showTextDocument(document, {
         preview: true,
         preserveFocus: true
     })
