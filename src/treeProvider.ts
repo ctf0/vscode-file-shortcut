@@ -20,7 +20,10 @@ export default class TreeProvider implements TreeDataProvider<TreeFile> {
         getConf('sort') == 'alpha'
             ? files.sort()
             : files.sort((a, b) => {
-                return a.length - b.length || a.localeCompare(b)
+                let a_name = getFileName(a)
+                let b_name = getFileName(b)
+
+                return a_name.length - b_name.length || a_name.localeCompare(b_name)
             })
 
         return files.map((path) => {
