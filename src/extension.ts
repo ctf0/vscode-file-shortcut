@@ -13,14 +13,11 @@ export function activate({ subscriptions }) {
     }
 
     // on new document
-    window.onDidChangeVisibleTextEditors(async (editors) => {
+    window.onDidChangeActiveTextEditor(async (editor) => {
         setContext(false)
 
-        for (const editor of editors) {
-            if (isAFile(editor)) {
-                setContext(true)
-                break
-            }
+        if (editor && isAFile(editor)) {
+            setContext(true)
         }
     })
 
