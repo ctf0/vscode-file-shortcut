@@ -56,3 +56,10 @@ export function openFile() {
         }
     })
 }
+export function sortTreeList() {
+    return commands.registerCommand('fileShortcut.sort', (e) => {
+        let sort = util.getConf('sort') == 'length' ? 'alpha' : 'length'
+
+        return util.updateConf('sort', sort)
+    })
+}

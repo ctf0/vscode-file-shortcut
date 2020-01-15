@@ -1,11 +1,20 @@
-import { window, commands } from 'vscode'
+import { window, commands, workspace } from 'vscode'
 import * as cmnds from './commands'
+import * as util from './utils'
 import TreeProvider from './treeProvider'
 
 export function activate({ subscriptions }) {
     setContext(false)
+    checkForListLength()
 
-    // current
+    // on config change
+    workspace.onDidChangeConfiguration((e: any) => {
+        if (e.affectsConfiguration('fileShortcut.list')) {
+            checkForListLength()
+        }
+    })
+
+    // current file
     let editor = window.activeTextEditor
 
     if (editor && isAFile(editor)) {
@@ -25,6 +34,7 @@ export function activate({ subscriptions }) {
     subscriptions.push(cmnds.addCurrentFile())
     subscriptions.push(cmnds.deleteFile())
     subscriptions.push(cmnds.showFileList())
+    subscriptions.push(cmnds.sortTreeList())
 
     window.registerTreeDataProvider('fs_list', new TreeProvider())
 }
@@ -35,4 +45,12 @@ function setContext(val, key = 'fscEnabled') {
 
 function isAFile({ document }) {
     return document.fileName.includes('/')
+}
+
+function checkForListLength() {
+    setContext(false, 'fscHasFiles')
+
+    if (util.getConf('list').length) {
+        setContext(true, 'fscHasFiles')
+    }
 }
