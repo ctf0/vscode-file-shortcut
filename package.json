@@ -3,12 +3,9 @@
     "displayName": "File Shortcut",
     "description": "add/open/delete your favorite file list",
     "icon": "img/file.png",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ctf0/vscode-file-shortcut"
-    },
     "publisher": "ctf0",
-    "version": "0.1.0",
+    "repository": "https://github.com/ctf0/vscode-file-shortcut",
+    "version": "0.1.1",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -168,6 +165,11 @@
                     "type": "number",
                     "default": 0.5,
                     "description": "in seconds, toggle sidebar after file is opened (0 == do nothing)\n 'only works when file is opened from treeview'"
+                },
+                "fileShortcut.OpenInNewGroup": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "open files in new group next to current group"
                 }
             }
         }

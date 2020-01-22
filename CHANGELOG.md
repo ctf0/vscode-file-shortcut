@@ -17,3 +17,7 @@
 - fix tree view add btn
 - add new sorting option
 - hide sidebar after file open
+
+## 0.1.1
+
+- new config `OpenInNewGroup`

@@ -18,6 +18,7 @@ export async function showDocument(path) {
     let document = await workspace.openTextDocument(path)
 
     return window.showTextDocument(document, {
+        viewColumn: getConf('OpenInNewGroup') ? -2 : 1,
         preview: true,
         preserveFocus: true
     })
