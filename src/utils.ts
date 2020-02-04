@@ -14,13 +14,13 @@ export function getFileName(path: string) {
     return path.split('/').pop()
 }
 
-export async function showDocument(path) {
+export async function showDocument(path, preserveFocus = true) {
     let document = await workspace.openTextDocument(path)
 
-    return window.showTextDocument(document, {
+    await window.showTextDocument(document, {
         viewColumn: getConf('OpenInNewGroup') ? -2 : 1,
-        preview: true,
-        preserveFocus: true
+        preview: preserveFocus,
+        preserveFocus: preserveFocus
     })
 }
 

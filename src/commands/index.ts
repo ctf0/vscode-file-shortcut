@@ -43,7 +43,7 @@ export function deleteFile() {
 
 export function openFile() {
     return commands.registerCommand('fileShortcut.openFile', (path, type) => {
-        util.showDocument(path)
+        util.showDocument(path, false)
 
         if (type == 'treeview') {
             let time = util.getConf('hideSidebarTimeOut')

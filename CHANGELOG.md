@@ -21,3 +21,8 @@
 ## 0.1.1
 
 - new config `OpenInNewGroup`
+
+## 0.1.2
+
+- correct file preview from quicklist
+- activate the file when opened from activityBar view
