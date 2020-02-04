@@ -26,3 +26,7 @@
 
 - correct file preview from quicklist
 - activate the file when opened from activityBar view
+
+## 0.1.3
+
+- add groups

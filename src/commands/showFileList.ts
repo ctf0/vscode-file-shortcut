@@ -1,13 +1,24 @@
 import { commands, window, workspace } from 'vscode'
-import { getConf, showDocument, showMsg } from '../utils'
+import * as util from '../utils'
 const debounce = require('lodash.debounce')
 
 export function showFileList() {
     return commands.registerCommand('fileShortcut.showFileList', async () => {
-        let filePaths: any[] = await getConf('list')
+        let filePaths = []
+        let list = util.getConf('list')
+
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i]
+
+            if (typeof item == 'string') {
+                filePaths.push(item)
+            } else {
+                filePaths.push(...item.documents)
+            }
+        }
 
         if (!filePaths.length) {
-            return showMsg('no list found')
+            return util.showMsg('no list found')
         }
 
         // enable preview mode
@@ -22,7 +33,7 @@ async function showQuickPick(filePaths: string[]) {
     await window.showQuickPick(filePaths, {
         placeHolder: 'Pick a file to open',
         onDidSelectItem: debounce(async function (item: string) {
-            return showDocument(item)
+            return util.showDocument(item)
         }, 300)
     }).then(async (selection) => {
         if (selection) {
@@ -34,10 +45,10 @@ async function showQuickPick(filePaths: string[]) {
 
 async function openFile(filePath: string) {
     try {
-        showDocument(filePath)
+        util.showDocument(filePath)
     } catch (error) {
         if (error.message.includes('cannot open file')) {
-            showMsg(`"${filePath}" not found`)
+            util.showMsg(`"${filePath}" not found`)
         }
     }
 }

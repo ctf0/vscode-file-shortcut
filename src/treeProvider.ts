@@ -1,7 +1,13 @@
-import { TreeItem, TreeDataProvider, EventEmitter, workspace, Command, ThemeIcon } from 'vscode'
-import { getConf, getFileName } from './utils'
+import {
+    TreeItem,
+    EventEmitter,
+    workspace,
+    ThemeIcon,
+    TreeItemCollapsibleState
+} from 'vscode'
+import * as util from './utils'
 
-export default class TreeProvider implements TreeDataProvider<TreeFile> {
+export default class TreeProvider {
 
     _onDidChangeTreeData = new EventEmitter()
     onDidChangeTreeData = this._onDidChangeTreeData.event
@@ -14,48 +20,110 @@ export default class TreeProvider implements TreeDataProvider<TreeFile> {
         })
     }
 
-    async getChildren() {
-        let files = await getConf('list')
+    async getList() {
+        let list = util.getConf('list')
+        list = util.getListByType(list, 'object')
+            .concat([{ name: util.defGroup, documents: list.filter((e) => typeof e == 'string') }])
 
-        getConf('sort') == 'alpha'
-            ? files.sort()
-            : files.sort((a, b) => {
-                let a_name = getFileName(a)
-                let b_name = getFileName(b)
-
-                return a_name.length - b_name.length || a_name.localeCompare(b_name)
+        return this.sortList(list)
+            .map(({ name: group, documents: docs }) => {
+                return new TreeGroup(
+                    group,
+                    `${group} (${docs.length} items)`,
+                    docs.map((path) => {
+                        return new TreeGroupItem(
+                            group,
+                            path,
+                            util.getFileName(path),
+                            {
+                                command: 'fileShortcut.openFile',
+                                title: 'Execute',
+                                arguments: [path, 'treeview']
+                            }
+                        )
+                    })
+                )
             })
+    }
 
-        return files.map((path) => {
-            let name = getFileName(path)
+    sortList(list) {
+        return list.map((item) => {
+            if (util.getConf('sort') == 'alpha') {
+                item.documents.sort((a, b) => {
+                    let a_name = util.getFileName(a).toLowerCase()
+                    let b_name = util.getFileName(b).toLowerCase()
 
-            return new TreeFile(path, name, {
-                command: 'fileShortcut.openFile',
-                title: 'Execute',
-                arguments: [path, 'treeview']
-            })
+                    if (a_name < b_name) { return -1 }
+
+                    if (a_name > b_name) { return 1 }
+
+                    return 0
+                })
+            } else {
+                item.documents.sort((a, b) => {
+                    let a_name = util.getFileName(a)
+                    let b_name = util.getFileName(b)
+
+                    return a_name.length - b_name.length || a_name.localeCompare(b_name)
+                })
+            }
+
+            return item
         })
+    }
+
+    async getChildren(element) {
+        if (element === undefined) {
+            return this.getList()
+        }
+
+        return element.children
     }
 
     getTreeItem(file) {
         return file
     }
+}
 
-    sort() {
+class TreeGroup extends TreeItem {
+    children
+    group
 
+    constructor(
+        group,
+        label,
+        children
+    ) {
+        super(
+            label,
+            children === undefined
+                ? TreeItemCollapsibleState.None
+                : TreeItemCollapsibleState.Expanded
+        )
+
+        this.group = group
+        this.children = children
+        this.contextValue = 'parent'
     }
 }
 
-class TreeFile extends TreeItem {
+class TreeGroupItem extends TreeItem {
+    group
+    path
+
     constructor(
+        group,
         path,
         label,
-        command?: Command
+        command
     ) {
         super(label)
-        this.id = path
+
+        this.group = group
+        this.path = path
         this.command = command
         this.tooltip = `open file "${path}"`
         this.iconPath = ThemeIcon.File
+        this.contextValue = 'child'
     }
 }

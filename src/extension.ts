@@ -7,9 +7,12 @@ export function activate({ subscriptions }) {
     setContext(false)
     checkForListLength()
 
+    util.setUnGroupedListName()
+
     // on config change
     workspace.onDidChangeConfiguration((e: any) => {
-        if (e.affectsConfiguration('fileShortcut.list')) {
+        if (e.affectsConfiguration('fileShortcut')) {
+            util.setUnGroupedListName()
             checkForListLength()
         }
     })
@@ -36,6 +39,8 @@ export function activate({ subscriptions }) {
     subscriptions.push(cmnds.showFileList())
     subscriptions.push(cmnds.sortTreeList())
 
+    subscriptions.push(cmnds.deleteGroup())
+    subscriptions.push(cmnds.changeFileGroup())
     window.registerTreeDataProvider('fs_list', new TreeProvider())
 }
 
