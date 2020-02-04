@@ -22,7 +22,7 @@ export function addCurrentFile() {
                 let groupIndex = util.getGroupIndexByName(groupName)
 
                 if (groupIndex > -1) {
-                    list[groupIndex].documents = list[groupIndex].documents.push(path)
+                    list[groupIndex].documents.push(path)
                 } else {
                     list.unshift({
                         name: groupName,

@@ -30,3 +30,7 @@
 ## 0.1.3
 
 - add groups
+
+## 0.1.4
+
+- fix add file to group
