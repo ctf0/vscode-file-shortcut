@@ -38,8 +38,9 @@ async function showQuickPick(filePaths: string[]) {
     }).then(async (selection) => {
         if (selection) {
             await openFile(selection)
-            workspace.getConfiguration().update('workbench.editor.enablePreview', oldConfig, false)
         }
+
+        workspace.getConfiguration().update('workbench.editor.enablePreview', oldConfig, false)
     })
 }
 
