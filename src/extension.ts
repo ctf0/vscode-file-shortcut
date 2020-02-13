@@ -40,6 +40,7 @@ export function activate({ subscriptions }) {
     subscriptions.push(cmnds.sortTreeList())
 
     subscriptions.push(cmnds.deleteGroup())
+    subscriptions.push(cmnds.renameGroup())
     subscriptions.push(cmnds.changeFileGroup())
     window.registerTreeDataProvider('fs_list', new TreeProvider())
 }

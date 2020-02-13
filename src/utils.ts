@@ -50,24 +50,31 @@ export async function selectOrCreateGroup(list) {
 
     if (selection) {
         if (selection == newGroup) {
-            return window.showInputBox({
-                placeHolder: 'enter a new group name ...',
-                validateInput(v) {
-                    if (!v) {
-                        return 'you have to add a name'
-                    } else if (v && groupsList.includes(v)) {
-                        return `"${v}" is already taken, try something else`
-                    } else {
-                        return ''
-                    }
-                }
-            })
+            let name = await newGroupName(groupsList)
+
+            return name
         }
 
         return selection
     }
 
     return null
+}
+
+export function newGroupName(list, val = '') {
+    return window.showInputBox({
+        placeHolder: 'enter a new group name ...',
+        value: val,
+        validateInput(v) {
+            if (!v) {
+                return 'you have to add a name'
+            } else if (v && list.includes(v)) {
+                return `"${v}" is already taken, try something else`
+            } else {
+                return ''
+            }
+        }
+    })
 }
 
 export async function pickAGroup(list) {

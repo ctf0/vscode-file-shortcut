@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -69,6 +69,11 @@
                 "title": "Delete Group",
                 "category": "File Shortcut",
                 "icon": "$(chrome-close)"
+            },
+            {
+                "command": "fileShortcut.renameGroup",
+                "title": "Rename Group",
+                "icon": "$(symbol-key)"
             },
             {
                 "command": "fileShortcut.openFile",
@@ -139,6 +144,11 @@
                     "command": "fileShortcut.deleteGroup",
                     "when": "view == fs_list && viewItem == parent",
                     "group": "inline"
+                },
+                {
+                    "command": "fileShortcut.renameGroup",
+                    "when": "view == fs_list && viewItem == parent",
+                    "group": "inline"
                 }
             ],
             "commandPalette": [
@@ -160,6 +170,10 @@
                 },
                 {
                     "command": "fileShortcut.changeFileGroup",
+                    "when": "false"
+                },
+                {
+                    "command": "fileShortcut.renameGroup",
                     "when": "false"
                 }
             ]

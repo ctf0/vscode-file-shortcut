@@ -137,6 +137,26 @@ export function deleteGroup() {
         }
     })
 }
+
+export function renameGroup() {
+    return commands.registerCommand('fileShortcut.renameGroup', async (e) => {
+        let { group } = e
+        let list = util.getConf('list')
+        let groupsList = util.getGroups(list)
+        let name = await util.newGroupName(groupsList, group)
+
+        if (group == util.defGroup) {
+            return util.showMsg('plz use the "fileShortcut.unGroupedListName" configuration instead')
+        }
+
+        if (name) {
+            let i = util.getGroupIndexByName(group)
+            list[i].name = name
+            util.updateConf('list', list)
+        }
+    })
+}
+
 export function changeFileGroup() {
     return commands.registerCommand('fileShortcut.changeFileGroup', async (e) => {
         let list = util.getConf('list')
