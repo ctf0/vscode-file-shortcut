@@ -38,3 +38,7 @@
 ## 0.1.6
 
 - rename group
+
+## 0.1.7
+
+- remove file open preview

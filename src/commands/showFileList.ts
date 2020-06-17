@@ -1,5 +1,5 @@
-import { commands, window, workspace } from 'vscode'
-import * as util from '../utils'
+import {commands, window} from 'vscode'
+import * as util          from '../utils'
 const debounce = require('lodash.debounce')
 
 export function showFileList() {
@@ -27,20 +27,12 @@ export function showFileList() {
 }
 
 async function showQuickPick(filePaths: string[]) {
-    let oldConfig = workspace.getConfiguration('workbench').get('editor.enablePreview')
-    workspace.getConfiguration().update('workbench.editor.enablePreview', true, false)
-
     await window.showQuickPick(filePaths, {
-        placeHolder: 'Pick a file to open',
-        onDidSelectItem: debounce(async function (item: string) {
-            return util.showDocument(item)
-        }, 300)
+        placeHolder: 'Pick a file to open'
     }).then(async (selection) => {
         if (selection) {
             await openFile(selection)
         }
-
-        workspace.getConfiguration().update('workbench.editor.enablePreview', oldConfig, false)
     })
 }
 
