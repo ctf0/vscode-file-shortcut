@@ -42,3 +42,7 @@
 ## 0.1.7
 
 - remove file open preview
+
+## 0.1.8
+
+- show warning msg if file path is incorrect

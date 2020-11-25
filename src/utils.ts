@@ -1,4 +1,4 @@
-import { workspace, window } from 'vscode'
+import {window, workspace} from 'vscode'
 
 /* Config ------------------------------------------------------------------- */
 export function getConf(key: string) {
@@ -15,13 +15,17 @@ export function getFileName(path: string) {
 }
 
 export async function showDocument(path, preserveFocus = true) {
-    let document = await workspace.openTextDocument(path)
+    try {
+        let document = await workspace.openTextDocument(path)
 
-    await window.showTextDocument(document, {
-        viewColumn: getConf('OpenInNewGroup') ? -2 : 1,
-        preview: preserveFocus,
-        preserveFocus: preserveFocus
-    })
+        return window.showTextDocument(document, {
+            viewColumn   : getConf('OpenInNewGroup') ? -2 : 1,
+            preview      : preserveFocus,
+            preserveFocus: preserveFocus
+        })
+    } catch (error) {
+        showMsg(`file not found "${path}".`)
+    }
 }
 
 /* Groups ------------------------------------------------------------------- */
@@ -64,7 +68,7 @@ export async function selectOrCreateGroup(list) {
 export function newGroupName(list, val = '') {
     return window.showInputBox({
         placeHolder: 'enter a new group name ...',
-        value: val,
+        value      : val,
         validateInput(v) {
             if (!v) {
                 return 'you have to add a name'
@@ -80,7 +84,7 @@ export function newGroupName(list, val = '') {
 export async function pickAGroup(list) {
     return window.showQuickPick(
         list,
-        { placeHolder: 'chose a group ...' }
+        {placeHolder: 'chose a group ...'}
     )
 }
 
