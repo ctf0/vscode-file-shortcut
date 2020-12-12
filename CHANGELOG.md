@@ -46,3 +46,7 @@
 ## 0.1.8
 
 - show warning msg if file path is incorrect
+
+## 0.1.9
+
+- correct wrong notif type for normal ops

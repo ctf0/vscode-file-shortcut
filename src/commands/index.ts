@@ -1,6 +1,6 @@
-import { commands, window } from 'vscode'
-import * as util from '../utils'
-export { showFileList } from './showFileList'
+import {commands, window} from 'vscode'
+import * as util          from '../utils'
+export {showFileList} from './showFileList'
 
 /* File --------------------------------------------------------------------- */
 export function addCurrentFile() {
@@ -13,7 +13,7 @@ export function addCurrentFile() {
             let path = e ? e.fsPath : doc.uri.fsPath
 
             if (!doc || !path) {
-                return util.showMsg('sorry, this file type cant be added !', true)
+                return util.showMsg('sorry, this file type cant be added !')
             }
 
             if (groupName == util.defGroup) {
@@ -25,8 +25,8 @@ export function addCurrentFile() {
                     list[groupIndex].documents.push(path)
                 } else {
                     list.unshift({
-                        name: groupName,
-                        documents: [path]
+                        name      : groupName,
+                        documents : [path]
                     })
                 }
             }
@@ -56,8 +56,8 @@ export function deleteFile() {
                 (type == 'object' && current.documents.some((e) => e == path))
             ) {
                 found = {
-                    index: i,
-                    type: type
+                    index : i,
+                    type  : type
                 }
                 break
             }
@@ -76,7 +76,7 @@ export function deleteFile() {
         }
 
         util.updateConf('list', list)
-        util.showMsg('file removed')
+        util.showMsg('file removed', false)
     })
 }
 
@@ -140,13 +140,13 @@ export function deleteGroup() {
 
 export function renameGroup() {
     return commands.registerCommand('fileShortcut.renameGroup', async (e) => {
-        let { group } = e
+        let {group} = e
         let list = util.getConf('list')
         let groupsList = util.getGroups(list)
         let name = await util.newGroupName(groupsList, group)
 
         if (group == util.defGroup) {
-            return util.showMsg('plz use the "fileShortcut.unGroupedListName" configuration instead')
+            return util.showMsg('plz use the "fileShortcut.unGroupedListName" configuration instead', false)
         }
 
         if (name) {
@@ -161,11 +161,11 @@ export function changeFileGroup() {
     return commands.registerCommand('fileShortcut.changeFileGroup', async (e) => {
         let list = util.getConf('list')
         let toGroup = await util.selectOrCreateGroup(list)
-        let { path, group } = e
+        let {path, group} = e
 
         if (toGroup) {
             if (toGroup == group) {
-                return util.showMsg("can't move to the same group")
+                return util.showMsg('can\'t move to the same group')
             }
 
             // remove from current group
@@ -187,14 +187,14 @@ export function changeFileGroup() {
                     list[groupIndex].documents.push(path)
                 } else {
                     list.unshift({
-                        name: toGroup,
-                        documents: [path]
+                        name      : toGroup,
+                        documents : [path]
                     })
                 }
             }
 
             util.updateConf('list', list)
-            util.showMsg(`"${path}" moved to "${toGroup}"`)
+            util.showMsg(`"${path}" moved to "${toGroup}"`, false)
         }
     })
 }
@@ -202,7 +202,7 @@ export function changeFileGroup() {
 function removeFiles(list, group) {
     list.splice(util.getGroupIndexByName(group), 1)
     util.updateConf('list', list)
-    util.showMsg(`group "${group}" removed`)
+    util.showMsg(`group "${group}" removed`, false)
 }
 
 export function sortTreeList() {
