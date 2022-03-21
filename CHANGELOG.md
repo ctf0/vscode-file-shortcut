@@ -50,3 +50,7 @@
 ## 0.1.9
 
 - correct wrong notif type for normal ops
+
+## 0.2.0
+
+- open file in currently active column instead of always choosing the first

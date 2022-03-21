@@ -16,10 +16,11 @@ export function getFileName(path: string) {
 
 export async function showDocument(path, preserveFocus = true) {
     try {
+        let activeColumn = window.activeTextEditor?.viewColumn || 1
         let document = await workspace.openTextDocument(path)
 
         return window.showTextDocument(document, {
-            viewColumn   : getConf('OpenInNewGroup') ? -2 : 1,
+            viewColumn   : getConf('OpenInNewGroup') ? -2 : activeColumn,
             preview      : preserveFocus,
             preserveFocus: preserveFocus
         })

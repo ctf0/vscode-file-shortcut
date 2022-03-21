@@ -1,6 +1,5 @@
 import {commands, window} from 'vscode'
-import * as util          from '../utils'
-const debounce = require('lodash.debounce')
+import * as util from '../utils'
 
 export function showFileList() {
     return commands.registerCommand('fileShortcut.showFileList', async () => {
