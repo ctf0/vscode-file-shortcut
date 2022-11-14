@@ -15,7 +15,7 @@ export default class TreeProvider {
     constructor() {
         workspace.onDidChangeConfiguration((e: any) => {
             if (e.affectsConfiguration('fileShortcut')) {
-                this._onDidChangeTreeData.fire()
+                this._onDidChangeTreeData.fire(undefined)
             }
         })
     }
