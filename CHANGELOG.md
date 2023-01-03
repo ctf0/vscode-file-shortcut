@@ -54,3 +54,8 @@
 ## 0.2.0
 
 - open file in currently active column instead of always choosing the first
+
+## 0.2.3
+
+- group menu items to submenu to save space in the context menu
+- remove `editor/title` icon for add current file & instead rely on the view container icon

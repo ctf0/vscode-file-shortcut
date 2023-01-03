@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "engines": {
         "vscode": "^1.68.0"
     },
@@ -19,11 +19,7 @@
     ],
     "activationEvents": [
         "onFileSystem:file",
-        "onView:fs_list",
-        "onCommand:fileShortcut.showFileList",
-        "onCommand:fileShortcut.addCurrentFile",
-        "onCommand:fileShortcut.deleteFile",
-        "onCommand:fileShortcut.openFile"
+        "onView:fs_list"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -47,22 +43,20 @@
         "commands": [
             {
                 "command": "fileShortcut.showFileList",
-                "title": "File Shortcut: Open Files List"
+                "title": "Open Files List",
+                "category": "File Shortcut"
             },
             {
                 "command": "fileShortcut.addCurrentFile",
-                "title": "File Shortcut: Add Current File To List",
+                "title": "Add Current File To List",
+                "category": "File Shortcut",
                 "icon": "$(add)"
             },
             {
                 "command": "fileShortcut.deleteFile",
-                "title": "File Shortcut: Delete Current File From List",
+                "title": "Delete Current File From List",
+                "category": "File Shortcut",
                 "icon": "$(chrome-close)"
-            },
-            {
-                "command": "fileShortcut.changeFileGroup",
-                "title": "Change File Group",
-                "icon": "$(activate-breakpoints)"
             },
             {
                 "command": "fileShortcut.deleteGroup",
@@ -71,13 +65,18 @@
                 "icon": "$(chrome-close)"
             },
             {
+                "command": "fileShortcut.changeFileGroup",
+                "title": "Change File Group",
+                "icon": "$(activate-breakpoints)"
+            },
+            {
                 "command": "fileShortcut.renameGroup",
                 "title": "Rename Group",
                 "icon": "$(symbol-key)"
             },
             {
                 "command": "fileShortcut.openFile",
-                "title": "open file"
+                "title": "Open File"
             },
             {
                 "command": "fileShortcut.sort",
@@ -85,36 +84,51 @@
                 "icon": "$(sort-precedence)"
             }
         ],
+        "submenus": [
+            {
+                "id": "fileshortcut.editor.context",
+                "label": "File Shortcut"
+            },
+            {
+                "id": "fileshortcut.explorer.context",
+                "label": "File Shortcut"
+            }
+        ],
         "menus": {
-            "explorer/context": [
-                {
-                    "command": "fileShortcut.addCurrentFile",
-                    "when": "!explorerResourceIsFolder",
-                    "group": "fsc@1"
-                },
-                {
-                    "command": "fileShortcut.deleteFile",
-                    "when": "!explorerResourceIsFolder",
-                    "group": "fsc@1"
-                }
-            ],
             "editor/context": [
                 {
+                    "submenu": "fileshortcut.editor.context",
+                    "group": "fileshortcut"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "submenu": "fileshortcut.explorer.context",
+                    "group": "fileshortcut"
+                }
+            ],
+            "fileshortcut.explorer.context": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "when": "!explorerResourceIsFolder",
+                    "group": "fileshortcut"
+                },
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "when": "!explorerResourceIsFolder",
+                    "group": "fileshortcut"
+                }
+            ],
+            "fileshortcut.editor.context": [
+                {
                     "command": "fileShortcut.addCurrentFile",
                     "when": "fscEnabled",
-                    "group": "fsc@1"
+                    "group": "fileshortcut"
                 },
                 {
                     "command": "fileShortcut.deleteFile",
                     "when": "fscEnabled",
-                    "group": "fsc@1"
-                }
-            ],
-            "editor/title": [
-                {
-                    "command": "fileShortcut.addCurrentFile",
-                    "when": "fscEnabled",
-                    "group": "navigation"
+                    "group": "fileshortcut"
                 }
             ],
             "view/title": [
@@ -227,8 +241,8 @@
         "watch": "tsc -watch -p ./"
     },
     "devDependencies": {
-        "@types/node": "^18.11.9",
-        "typescript": "^4.8.4",
+        "@types/node": "^18.14.6",
+        "typescript": "^4.9.5",
         "@types/vscode": "^1.68.0"
     }
 }
