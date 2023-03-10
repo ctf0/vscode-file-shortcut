@@ -59,3 +59,7 @@
 
 - group menu items to submenu to save space in the context menu
 - remove `editor/title` icon for add current file & instead rely on the view container icon
+
+## 0.2.4
+
+- update file path on rename

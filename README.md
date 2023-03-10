@@ -9,3 +9,4 @@ based on https://github.com/ejabu/vscode-file-shortcut + extra options
 - add/delete group
 - move file from group to another
 - sort list
+- update file path on rename

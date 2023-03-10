@@ -1,129 +1,127 @@
 import {
-    TreeItem,
     EventEmitter,
-    workspace,
     ThemeIcon,
-    TreeItemCollapsibleState
-} from 'vscode'
-import * as util from './utils'
+    TreeItem,
+    TreeItemCollapsibleState,
+    workspace,
+} from 'vscode';
+import * as util from './utils';
 
 export default class TreeProvider {
 
-    _onDidChangeTreeData = new EventEmitter()
-    onDidChangeTreeData = this._onDidChangeTreeData.event
+    _onDidChangeTreeData = new EventEmitter();
+    onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     constructor() {
         workspace.onDidChangeConfiguration((e: any) => {
             if (e.affectsConfiguration('fileShortcut')) {
-                this._onDidChangeTreeData.fire(undefined)
+                setTimeout(() => {
+                    this._onDidChangeTreeData.fire(undefined);
+                }, 100);
             }
-        })
+        });
     }
 
     async getList() {
-        let list = util.getConf('list')
+        let list: any[] = util.getList();
         list = util.getListByType(list, 'object')
-            .concat([{ name: util.defGroup, documents: list.filter((e) => typeof e == 'string') }])
+            .concat([{ name: util.defGroup, documents: list.filter((e) => typeof e == 'string') }]);
 
         return this.sortList(list)
-            .map(({ name: group, documents: docs }) => {
-                return new TreeGroup(
+            .map(({ name: group, documents: docs }) => new TreeGroup(
+                group,
+                `${group} (${docs.length} items)`,
+                docs.map((path) => new TreeGroupItem(
                     group,
-                    `${group} (${docs.length} items)`,
-                    docs.map((path) => {
-                        return new TreeGroupItem(
-                            group,
-                            path,
-                            util.getFileName(path),
-                            {
-                                command: 'fileShortcut.openFile',
-                                title: 'Execute',
-                                arguments: [path, 'treeview']
-                            }
-                        )
-                    })
-                )
-            })
+                    path,
+                    util.getFileName(path),
+                    {
+                        command   : 'fileShortcut.openFile',
+                        title     : 'Execute',
+                        arguments : [path, 'treeview'],
+                    },
+                )),
+            ));
     }
 
     sortList(list) {
         return list.map((item) => {
             if (util.getConf('sort') == 'alpha') {
                 item.documents.sort((a, b) => {
-                    let a_name = util.getFileName(a).toLowerCase()
-                    let b_name = util.getFileName(b).toLowerCase()
+                    const a_name = util.getFileName(a).toLowerCase();
+                    const b_name = util.getFileName(b).toLowerCase();
 
-                    if (a_name < b_name) { return -1 }
+                    if (a_name < b_name) {return -1;}
 
-                    if (a_name > b_name) { return 1 }
+                    if (a_name > b_name) {return 1;}
 
-                    return 0
-                })
+                    return 0;
+                });
             } else {
                 item.documents.sort((a, b) => {
-                    let a_name = util.getFileName(a)
-                    let b_name = util.getFileName(b)
+                    const a_name = util.getFileName(a);
+                    const b_name = util.getFileName(b);
 
-                    return a_name.length - b_name.length || a_name.localeCompare(b_name)
-                })
+                    return a_name.length - b_name.length || a_name.localeCompare(b_name);
+                });
             }
 
-            return item
-        })
+            return item;
+        });
     }
 
     async getChildren(element) {
         if (element === undefined) {
-            return this.getList()
+            return this.getList();
         }
 
-        return element.children
+        return element.children;
     }
 
     getTreeItem(file) {
-        return file
+        return file;
     }
 }
 
 class TreeGroup extends TreeItem {
-    children
-    group
+    children;
+    group;
 
     constructor(
         group,
         label,
-        children
+        children,
     ) {
         super(
             label,
             children === undefined
                 ? TreeItemCollapsibleState.None
-                : TreeItemCollapsibleState.Expanded
-        )
+                : TreeItemCollapsibleState.Expanded,
+        );
 
-        this.group = group
-        this.children = children
-        this.contextValue = 'parent'
+        this.group = group;
+        this.children = children;
+        this.contextValue = 'parent';
     }
 }
 
 class TreeGroupItem extends TreeItem {
-    group
-    path
+    group;
+    path;
 
     constructor(
         group,
         path,
         label,
-        command
+        command,
     ) {
-        super(label)
+        super(label);
 
-        this.group = group
-        this.path = path
-        this.command = command
-        this.tooltip = `open file "${path}"`
-        this.iconPath = ThemeIcon.File
-        this.contextValue = 'child'
+        this.group = group;
+        this.path = path;
+        this.command = command;
+        this.tooltip = `open file "${path}"`;
+        this.iconPath = ThemeIcon.File;
+        this.contextValue = 'child';
     }
 }
