@@ -63,3 +63,7 @@
 ## 0.2.4
 
 - update file path on rename
+
+## 0.2.5
+
+- fix renaming the default group

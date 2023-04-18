@@ -101,7 +101,7 @@ class TreeGroup extends TreeItem {
 
         this.group = group;
         this.children = children;
-        this.contextValue = 'parent';
+        this.contextValue = group == util.defGroup ? 'default' : 'parent';
     }
 }
 

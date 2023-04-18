@@ -145,10 +145,6 @@ export function renameGroup() {
         const groupsList = util.getGroups(list);
         const name = await util.newGroupName(groupsList, group);
 
-        if (group == util.defGroup) {
-            return util.showMsg('plz use the "fileShortcut.unGroupedListName" configuration instead', false);
-        }
-
         if (name) {
             const i = util.getGroupIndexByName(group);
             list[i].name = name;
