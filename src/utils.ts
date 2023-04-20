@@ -1,23 +1,57 @@
-import {window, workspace} from 'vscode';
+import * as Npath from 'node:path';
+import { window, workspace } from 'vscode';
+
+export const CMND_NAME = 'fileShortcut';
+export const SHOW_FILE_NAME_IN_LIST_AS = {
+    nameAndAlias : 1,
+    aliasOnly    : 2,
+};
 
 /* Config ------------------------------------------------------------------- */
 export function getConf(key: string) {
-    return workspace.getConfiguration('fileShortcut')[key];
+    return workspace.getConfiguration(CMND_NAME)[key];
 }
 
 export function updateConf(key: string, val: any) {
-    return workspace.getConfiguration().update(`fileShortcut.${key}`, val, true);
+    return workspace.getConfiguration().update(`${CMND_NAME}.${key}`, val, true);
 }
 
 /* Document ----------------------------------------------------------------- */
-export function getFileName(path: string) {
-    return path.split('/').pop();
+export function getFileName(doc: string) {
+    return Npath.basename(doc);
 }
 
-export async function showDocument(path, preserveFocus = true) {
+export function getDocPath(doc) {
+    if (typeof doc === 'object') {
+        return doc.filePath;
+    }
+
+    return doc;
+}
+
+export function getDocLabel(doc: any, showNameAndAlias = false, showAliasOnly = false): any {
+    const filePath = getDocPath(doc);
+    const name = getFileName(filePath);
+
+    if (typeof doc === 'object') {
+        const alias = doc?.alias;
+
+        if (showNameAndAlias) {
+            return name + (alias ? ` (${alias})` : '');
+        }
+
+        if (showAliasOnly) {
+            return alias || name;
+        }
+    }
+
+    return name;
+}
+
+export async function showDocument(filePath, preserveFocus = true) {
     try {
         const activeColumn = window.activeTextEditor?.viewColumn || 1;
-        const document = await workspace.openTextDocument(path);
+        const document = await workspace.openTextDocument(filePath);
 
         return window.showTextDocument(document, {
             viewColumn    : getConf('OpenInNewGroup') ? -2 : activeColumn,
@@ -25,7 +59,7 @@ export async function showDocument(path, preserveFocus = true) {
             preserveFocus : preserveFocus,
         });
     } catch (error) {
-        showMsg(`file not found "${path}".`);
+        return showMsg(`file not found "${filePath}".`);
     }
 }
 
@@ -37,7 +71,7 @@ export function setUnGroupedListName() {
 }
 
 export function getListByType(list, type) {
-    return list.filter((e) => typeof e == type);
+    return list.filter((e) => typeof e === type);
 }
 
 export function getGroups(list) {
@@ -45,7 +79,7 @@ export function getGroups(list) {
 }
 
 export function getGroupIndexByName(group) {
-    return getConf('list').findIndex((item) => item.name == group);
+    return getConf('list').findIndex((item) => item.name === group);
 }
 
 export async function selectOrCreateGroup(list) {
@@ -54,7 +88,7 @@ export async function selectOrCreateGroup(list) {
     const selection = await pickAGroup(groupsList);
 
     if (selection) {
-        if (selection == newGroup) {
+        if (selection === newGroup) {
             const name = await newGroupName(groupsList);
 
             return name;
@@ -66,14 +100,14 @@ export async function selectOrCreateGroup(list) {
     return null;
 }
 
-export function newGroupName(list, val = '') {
+export function newGroupName(groupsList, val = '') {
     return window.showInputBox({
         placeHolder : 'enter a new group name ...',
         value       : val,
         validateInput(v) {
             if (!v) {
                 return 'you have to add a name';
-            } else if (v && list.includes(v)) {
+            } else if (v && groupsList.some((group) => group === v)) {
                 return `"${v}" is already taken, try something else`;
             } else {
                 return '';
@@ -85,7 +119,7 @@ export function newGroupName(list, val = '') {
 export async function pickAGroup(list) {
     return window.showQuickPick(
         list,
-        {placeHolder: 'chose a group ...'},
+        { placeHolder: 'chose a group ...' },
     );
 }
 

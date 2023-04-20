@@ -67,3 +67,11 @@
 ## 0.2.5
 
 - fix renaming the default group
+
+## 0.3.0
+
+- add support for file alias
+- add more icons to the tree view navigation area for better usage
+- we can now open multiple files at the same time through the file list picker
+- add new configs `DisplayFileNameInListAs`
+- fix getting error related to tree view auto refresh on list change

@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.2.5",
+    "version": "0.3.0",
     "engines": {
         "vscode": "^1.68.0"
     },
@@ -44,7 +44,8 @@
             {
                 "command": "fileShortcut.showFileList",
                 "title": "Open Files List",
-                "category": "File Shortcut"
+                "category": "File Shortcut",
+                "icon": "$(search)"
             },
             {
                 "command": "fileShortcut.addCurrentFile",
@@ -59,6 +60,12 @@
                 "icon": "$(chrome-close)"
             },
             {
+                "command": "fileShortcut.toggleFileAlias",
+                "title": "Add/Remove File Alias",
+                "category": "File Shortcut",
+                "icon": "$(word-wrap)"
+            },
+            {
                 "command": "fileShortcut.deleteGroup",
                 "title": "Delete Group",
                 "category": "File Shortcut",
@@ -67,12 +74,12 @@
             {
                 "command": "fileShortcut.changeFileGroup",
                 "title": "Change File Group",
-                "icon": "$(activate-breakpoints)"
+                "icon": "$(ungroup-by-ref-type)"
             },
             {
                 "command": "fileShortcut.renameGroup",
                 "title": "Rename Group",
-                "icon": "$(symbol-key)"
+                "icon": "$(edit)"
             },
             {
                 "command": "fileShortcut.openFile",
@@ -82,6 +89,11 @@
                 "command": "fileShortcut.sort",
                 "title": "Change List Sorting",
                 "icon": "$(sort-precedence)"
+            },
+            {
+                "command": "fileShortcut.DisplayFileNameInListAs",
+                "title": "Change File Names Display",
+                "icon": "$(whole-word)"
             }
         ],
         "submenus": [
@@ -141,6 +153,16 @@
                     "command": "fileShortcut.sort",
                     "when": "view == fs_list && fscHasFiles",
                     "group": "navigation"
+                },
+                {
+                    "command": "fileShortcut.DisplayFileNameInListAs",
+                    "when": "view == fs_list && fscHasFiles",
+                    "group": "navigation"
+                },
+                {
+                    "command": "fileShortcut.showFileList",
+                    "when": "view == fs_list && fscHasFiles",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
@@ -150,8 +172,13 @@
                     "group": "inline"
                 },
                 {
-                    "command": "fileShortcut.changeFileGroup",
+                    "command": "fileShortcut.toggleFileAlias",
                     "when": "view == fs_list && viewItem == child",
+                    "group": "inline"
+                },
+                {
+                    "command": "fileShortcut.changeFileGroup",
+                    "when": "view == fs_list && viewItem =~ /(child|default)/",
                     "group": "inline"
                 },
                 {
@@ -175,11 +202,19 @@
                     "when": "fscEnabled"
                 },
                 {
+                    "command": "fileShortcut.toggleFileAlias",
+                    "when": "false"
+                },
+                {
                     "command": "fileShortcut.openFile",
                     "when": "false"
                 },
                 {
                     "command": "fileShortcut.sort",
+                    "when": "false"
+                },
+                {
+                    "command": "fileShortcut.DisplayFileNameInListAs",
                     "when": "false"
                 },
                 {
@@ -231,6 +266,19 @@
                     "type": "string",
                     "default": "♠❤♣♦",
                     "description": "un-grouped list name"
+                },
+                "fileShortcut.DisplayFileNameInListAs": {
+                    "type": "number",
+                    "default": 1,
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "enumDescriptions": [
+                        "name + alias",
+                        "alias only"
+                    ],
+                    "description": "change how to display file labels in treeview"
                 }
             }
         }
@@ -243,7 +291,7 @@
         "watch": "npm run esbuild"
     },
     "devDependencies": {
-        "@types/node": "^18.15.11",
+        "@types/node": "^18.15.12",
         "@types/vscode": "^1.68.0",
         "esbuild": "^0.17.17",
         "typescript": "^5.0.4"

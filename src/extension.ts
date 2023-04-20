@@ -1,54 +1,41 @@
 import fs from 'node:fs';
-import { FileRenameEvent, TextEditor, commands, window, workspace } from 'vscode';
-import * as cmnds from './commands';
+import { FileRenameEvent, commands, window, workspace } from 'vscode';
+import * as cmnds from './commands/index';
 import { getFilePaths } from './commands/showFileList';
 import TreeProvider from './treeProvider';
 import * as util from './utils';
 
-export function activate({ subscriptions }) {
-    setContext(false);
-    checkForListLength();
-
+export async function activate({ subscriptions }) {
+    await toggleFscEnabled();
+    await toggleFscHasFiles();
     util.setUnGroupedListName();
 
-    // on config change
     subscriptions.push(
-        workspace.onDidChangeConfiguration((e: any) => {
-            if (e.affectsConfiguration('fileShortcut')) {
+        // on config change
+        workspace.onDidChangeConfiguration(async (e: any) => {
+            if (e.affectsConfiguration(util.CMND_NAME)) {
                 util.setUnGroupedListName();
-                checkForListLength();
+                await toggleFscHasFiles();
             }
         }),
-    );
-
-    // current file
-    const editor = window.activeTextEditor;
-
-    if (editor && isAFile(editor)) {
-        setContext(true);
-    }
-
-    // on new document
-    subscriptions.push(
-        window.onDidChangeActiveTextEditor(async (editor: TextEditor | undefined) => {
-            setContext(false);
-
-            if (editor && isAFile(editor)) {
-                setContext(true);
-            }
-        }),
-    );
-
-    subscriptions.push(
+        // on new document
+        window.onDidChangeActiveTextEditor(async (e) => await toggleFscEnabled()),
+        // list
+        cmnds.showFileList(),
+        // file
         cmnds.openFile(),
         cmnds.addCurrentFile(),
         cmnds.deleteFile(),
-        cmnds.showFileList(),
-        cmnds.sortTreeList(),
+        cmnds.toggleFileAlias(),
+        // group
         cmnds.deleteGroup(),
         cmnds.renameGroup(),
         cmnds.changeFileGroup(),
+        // tree
+        cmnds.sortTreeList(),
+        cmnds.treeFileNameDisplay(),
         window.registerTreeDataProvider('fs_list', new TreeProvider()),
+        // rename
         workspace.onDidRenameFiles(async (event: FileRenameEvent) => await updateSavedPath(event)),
     );
 }
@@ -67,21 +54,21 @@ async function updateSavedPath(event: FileRenameEvent) {
                 continue;
             }
 
-            if (!filePaths.includes(from)) {
+            if (!filePaths.some((item) => item === from)) {
                 continue;
             }
 
             // update file path
             const list: any[] = util.getList();
-            let found: any = null;
+            let found: any;
 
             for (let i = 0; i < list.length; i++) {
                 const current = list[i];
                 const type = typeof current;
 
                 if (
-                    (type == 'string' && current == from) ||
-                    (type == 'object' && current.documents.some((e) => e == from))
+                    (type === 'string' && current === from) ||
+                    (type === 'object' && current.documents.some((doc) => util.getDocPath(doc) === from))
                 ) {
                     found = {
                         index : i,
@@ -93,20 +80,26 @@ async function updateSavedPath(event: FileRenameEvent) {
 
             const i = found.index;
 
-            if (found.type == 'object') {
-                list[i].documents = list[i].documents.map((item) => {
-                    if (item === from) {
-                        return to;
+            if (found.type === 'object') {
+                list[i].documents = list[i].documents.map((doc) => {
+                    const docPath = util.getDocPath(doc);
+
+                    if (docPath === from) {
+                        if (typeof doc === 'object') {
+                            doc.filePath = to;
+                        } else {
+                            doc = to;
+                        }
                     }
 
-                    return item;
+                    return doc;
                 });
             } else {
                 list[i] = to;
             }
 
-            util.updateConf('list', list);
-            util.showMsg('file updated', false);
+            await util.updateConf('list', list);
+            util.showMsg(`file "${util.getFileName(from)}" updated to "${util.getFileName(to)}"`, false);
         } catch (error) {
             // console.error(error)
             break;
@@ -115,17 +108,23 @@ async function updateSavedPath(event: FileRenameEvent) {
 }
 
 function setContext(val, key = 'fscEnabled') {
-    commands.executeCommand('setContext', key, val);
+    return commands.executeCommand('setContext', key, val);
 }
 
-function isAFile({ document }) {
-    return document.fileName.includes('/');
+async function toggleFscEnabled() {
+    const editor = window.activeTextEditor;
+
+    await setContext(false);
+
+    if (editor && !editor.document.isUntitled) {
+        await setContext(true);
+    }
 }
 
-function checkForListLength() {
-    setContext(false, 'fscHasFiles');
+async function toggleFscHasFiles() {
+    await setContext(false, 'fscHasFiles');
 
     if (util.getList().length) {
-        setContext(true, 'fscHasFiles');
+        return setContext(true, 'fscHasFiles');
     }
 }

@@ -10,3 +10,20 @@ based on https://github.com/ejabu/vscode-file-shortcut + extra options
 - move file from group to another
 - sort list
 - update file path on rename
+
+### Example
+
+```json
+"fileShortcut.list": [
+    {
+        "name": "config",
+        "documents": [
+            "/path/to/abc.json",
+            {
+                "filePath": "/path/to/somefile.txt",
+                "alias": "ideas"
+            },
+        ]
+    },
+]
+```

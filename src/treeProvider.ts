@@ -8,37 +8,44 @@ import {
 import * as util from './utils';
 
 export default class TreeProvider {
-
     _onDidChangeTreeData = new EventEmitter();
     onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     constructor() {
         workspace.onDidChangeConfiguration((e: any) => {
-            if (e.affectsConfiguration('fileShortcut')) {
+            if (e.affectsConfiguration(util.CMND_NAME)) {
                 setTimeout(() => {
                     this._onDidChangeTreeData.fire(undefined);
-                }, 100);
+                }, 300);
             }
         });
     }
 
     async getList() {
+        const labelType = util.getConf('DisplayFileNameInListAs');
         let list: any[] = util.getList();
         list = util.getListByType(list, 'object')
-            .concat([{ name: util.defGroup, documents: list.filter((e) => typeof e == 'string') }]);
+            .concat([{
+                name      : util.defGroup,
+                documents : list.filter((e) => typeof e === 'string') || [],
+            }]);
 
         return this.sortList(list)
-            .map(({ name: group, documents: docs }) => new TreeGroup(
+            .map(({ name: group, documents }) => new TreeGroup(
                 group,
-                `${group} (${docs.length} items)`,
-                docs.map((path) => new TreeGroupItem(
+                `${group} (${documents.length} items)`,
+                documents.map((doc) => new TreeGroupItem(
                     group,
-                    path,
-                    util.getFileName(path),
+                    doc,
+                    util.getDocLabel(
+                        doc,
+                        labelType === util.SHOW_FILE_NAME_IN_LIST_AS.nameAndAlias,
+                        labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly,
+                    ),
                     {
-                        command   : 'fileShortcut.openFile',
+                        command   : `${util.CMND_NAME}.openFile`,
                         title     : 'Execute',
-                        arguments : [path, 'treeview'],
+                        arguments : [doc, 'treeview'],
                     },
                 )),
             ));
@@ -46,8 +53,11 @@ export default class TreeProvider {
 
     sortList(list) {
         return list.map((item) => {
-            if (util.getConf('sort') == 'alpha') {
+            if (util.getConf('sort') === 'alpha') {
                 item.documents.sort((a, b) => {
+                    a = util.getDocPath(a);
+                    b = util.getDocPath(b);
+
                     const a_name = util.getFileName(a).toLowerCase();
                     const b_name = util.getFileName(b).toLowerCase();
 
@@ -59,6 +69,9 @@ export default class TreeProvider {
                 });
             } else {
                 item.documents.sort((a, b) => {
+                    a = util.getDocPath(a);
+                    b = util.getDocPath(b);
+
                     const a_name = util.getFileName(a);
                     const b_name = util.getFileName(b);
 
@@ -101,27 +114,27 @@ class TreeGroup extends TreeItem {
 
         this.group = group;
         this.children = children;
-        this.contextValue = group == util.defGroup ? 'default' : 'parent';
+        this.contextValue = group === util.defGroup ? 'default' : 'parent';
     }
 }
 
 class TreeGroupItem extends TreeItem {
     group;
-    path;
+    doc;
 
     constructor(
         group,
-        path,
+        doc,
         label,
         command,
     ) {
         super(label);
 
         this.group = group;
-        this.path = path;
+        this.doc = doc;
         this.command = command;
-        this.tooltip = `open file "${path}"`;
-        this.iconPath = ThemeIcon.File;
-        this.contextValue = 'child';
+        this.tooltip = `open file "${util.getDocPath(doc)}"`;
+        this.iconPath = doc.alias ? new ThemeIcon('link') : ThemeIcon.File;
+        this.contextValue = group === util.defGroup ? 'default' : 'child';
     }
 }
