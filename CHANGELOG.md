@@ -75,3 +75,7 @@
 - we can now open multiple files at the same time through the file list picker
 - add new configs `DisplayFileNameInListAs`
 - fix getting error related to tree view auto refresh on list change
+
+## 0.3.1
+
+- show file icons in the treeview instead of generic icon

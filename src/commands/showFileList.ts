@@ -37,7 +37,6 @@ export function showFileList() {
             return util.showMsg('no list found');
         }
 
-        // TODO: enable preview mode
         showQuickPick(filePaths);
     });
 }

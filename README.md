@@ -8,6 +8,7 @@ based on https://github.com/ejabu/vscode-file-shortcut + extra options
 - add/delete file
 - add/delete group
 - move file from group to another
+- add alias to file
 - sort list
 - update file path on rename
 

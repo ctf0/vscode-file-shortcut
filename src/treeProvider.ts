@@ -1,13 +1,15 @@
 import {
     EventEmitter,
     ThemeIcon,
+    TreeDataProvider,
     TreeItem,
     TreeItemCollapsibleState,
+    Uri,
     workspace,
 } from 'vscode';
 import * as util from './utils';
 
-export default class TreeProvider {
+export default class TreeProvider implements TreeDataProvider<any> {
     _onDidChangeTreeData = new EventEmitter();
     onDidChangeTreeData = this._onDidChangeTreeData.event;
 
@@ -37,6 +39,7 @@ export default class TreeProvider {
                 documents.map((doc) => new TreeGroupItem(
                     group,
                     doc,
+                    labelType,
                     util.getDocLabel(
                         doc,
                         labelType === util.SHOW_FILE_NAME_IN_LIST_AS.nameAndAlias,
@@ -121,10 +124,12 @@ class TreeGroup extends TreeItem {
 class TreeGroupItem extends TreeItem {
     group;
     doc;
+    labelType;
 
     constructor(
         group,
         doc,
+        labelType,
         label,
         command,
     ) {
@@ -134,7 +139,8 @@ class TreeGroupItem extends TreeItem {
         this.doc = doc;
         this.command = command;
         this.tooltip = `open file "${util.getDocPath(doc)}"`;
-        this.iconPath = doc.alias ? new ThemeIcon('link') : ThemeIcon.File;
+        this.iconPath = (doc.alias && labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly) ? new ThemeIcon('link') : ThemeIcon.File;
+        this.resourceUri = Uri.file(util.getDocPath(doc));
         this.contextValue = group === util.defGroup ? 'default' : 'child';
     }
 }
