@@ -9,9 +9,9 @@ export function toggleFileAlias() {
         const alias = doc?.alias;
 
         const newAlias = await window.showInputBox({
-            placeHolder : 'enter alias name',
-            prompt      : 'leave it empty to remove current alias if any',
-            value       : alias,
+            placeHolder: 'enter alias name',
+            prompt: 'leave it empty to remove current alias if any',
+            value: alias,
             validateInput(v) {
                 if (typeof doc === 'string' && (!v || !v.trim())) {
                     return 'you have to add a name';
@@ -31,8 +31,8 @@ export function toggleFileAlias() {
                 if (item === doc) {
                     if (newAlias) {
                         item = {
-                            filePath : util.getDocPath(item),
-                            alias    : newAlias || '',
+                            filePath: util.getDocPath(item),
+                            alias: newAlias || '',
                         };
                     } else {
                         item = util.getDocPath(doc);
@@ -72,8 +72,8 @@ export function addCurrentFile() {
                     list[groupIndex].documents.push(filePath);
                 } else {
                     list.unshift({
-                        name      : groupName,
-                        documents : [filePath],
+                        name: groupName,
+                        documents: [filePath],
                     });
                 }
             }
@@ -104,8 +104,8 @@ export function deleteFile() {
                 (type === 'object' && current.documents.some((doc) => doc === filePath))
             ) {
                 found = {
-                    index : i,
-                    type  : type,
+                    index: i,
+                    type: type,
                 };
                 break;
             }
@@ -209,44 +209,50 @@ export function changeFileGroup() {
 
         const { doc, group } = e;
 
-        if (toGroup) {
-            if (toGroup === group) {
-                return util.showMsg('can\'t move to the same group');
-            }
-
-            // remove from current group
-            if (group === util.defGroup) {
-                list.splice(list.indexOf(doc), 1);
-            } else {
-                const groupIndex = util.getGroupIndexByName(group);
-                const di = list[groupIndex].documents.indexOf(doc);
-
-                list[groupIndex].documents.splice(di, 1);
-            }
-
-            // add to new group
-            if (toGroup === util.defGroup) {
-                list.push(doc);
-            } else {
-                const groupIndex = util.getGroupIndexByName(toGroup);
-
-                if (groupIndex > -1) {
-                    list[groupIndex].documents.push(doc);
-                } else {
-                    list.unshift({
-                        name      : toGroup,
-                        documents : [doc],
-                    });
-                }
-            }
-
-            await util.updateConf('list', list);
-            util.showMsg(`"${util.getDocLabel(doc)}" moved from "${group}" to "${toGroup}"`, false);
+        if (!toGroup) {
+            return;
         }
+
+        if (toGroup === group) {
+            return util.showMsg('can\'t move to the same group');
+        }
+
+        // remove from current group
+        if (group === util.defGroup) {
+            list.splice(list.indexOf(doc), 1);
+        } else {
+            const groupIndex = util.getGroupIndexByName(group);
+            const di = list[groupIndex].documents.indexOf(doc);
+
+            list[groupIndex].documents.splice(di, 1);
+        }
+
+        // add to new group
+        if (toGroup === util.defGroup) {
+            list.push(doc);
+        } else {
+            const groupIndex = util.getGroupIndexByName(toGroup);
+
+            if (groupIndex > -1) {
+                list[groupIndex].documents.push(doc);
+            } else {
+                list.unshift({
+                    name: toGroup,
+                    documents: [doc],
+                });
+            }
+        }
+
+        await util.updateConf('list', list);
+        util.showMsg(`"${util.getDocLabel(doc)}" moved from "${group}" to "${toGroup}"`, false);
     });
 }
 
 function removeGroupAndChild(list, group) {
+    if (group == util.defGroup) {
+        return util.showMsg(`default group "${group}" cant be removed`);
+    }
+
     list.splice(util.getGroupIndexByName(group), 1);
     util.updateConf('list', list);
     util.showMsg(`group "${group}" removed`, false);

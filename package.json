@@ -5,9 +5,9 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "engines": {
-        "vscode": "^1.68.0"
+        "vscode": "^1.80.0"
     },
     "keywords": [
         "file",
@@ -168,7 +168,7 @@
             "view/item/context": [
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "view == fs_list && viewItem == child",
+                    "when": "view == fs_list && viewItem =~ /(child|default-child)/",
                     "group": "inline"
                 },
                 {
@@ -178,12 +178,12 @@
                 },
                 {
                     "command": "fileShortcut.changeFileGroup",
-                    "when": "view == fs_list && viewItem =~ /(child|default)/",
+                    "when": "view == fs_list && viewItem =~ /(child|default-child)/",
                     "group": "inline"
                 },
                 {
                     "command": "fileShortcut.deleteGroup",
-                    "when": "view == fs_list && viewItem =~ /(parent|default)/",
+                    "when": "view == fs_list && viewItem == parent",
                     "group": "inline"
                 },
                 {
@@ -291,9 +291,9 @@
         "watch": "npm run esbuild"
     },
     "devDependencies": {
-        "@types/node": "^18.15.12",
-        "@types/vscode": "^1.68.0",
-        "esbuild": "^0.17.17",
-        "typescript": "^5.0.4"
+        "@types/node": "^20.12.8",
+        "@types/vscode": "^1.80.0",
+        "esbuild": "^0.20.2",
+        "typescript": "^5.4.5"
     }
 }

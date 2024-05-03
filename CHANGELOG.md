@@ -79,3 +79,7 @@
 ## 0.3.1
 
 - show file icons in the treeview instead of generic icon
+
+## 0.3.2
+
+- fix default list files operations

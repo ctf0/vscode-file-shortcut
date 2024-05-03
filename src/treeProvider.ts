@@ -28,8 +28,8 @@ export default class TreeProvider implements TreeDataProvider<any> {
         let list: any[] = util.getList();
         list = util.getListByType(list, 'object')
             .concat([{
-                name      : util.defGroup,
-                documents : list.filter((e) => typeof e === 'string') || [],
+                name: util.defGroup,
+                documents: list.filter((e) => typeof e === 'string') || [],
             }]);
 
         return this.sortList(list)
@@ -46,9 +46,9 @@ export default class TreeProvider implements TreeDataProvider<any> {
                         labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly,
                     ),
                     {
-                        command   : `${util.CMND_NAME}.openFile`,
-                        title     : 'Execute',
-                        arguments : [doc, 'treeview'],
+                        command: `${util.CMND_NAME}.openFile`,
+                        title: 'Execute',
+                        arguments: [doc, 'treeview'],
                     },
                 )),
             ));
@@ -64,9 +64,9 @@ export default class TreeProvider implements TreeDataProvider<any> {
                     const a_name = util.getFileName(a).toLowerCase();
                     const b_name = util.getFileName(b).toLowerCase();
 
-                    if (a_name < b_name) {return -1;}
+                    if (a_name < b_name) { return -1; }
 
-                    if (a_name > b_name) {return 1;}
+                    if (a_name > b_name) { return 1; }
 
                     return 0;
                 });
@@ -141,6 +141,6 @@ class TreeGroupItem extends TreeItem {
         this.tooltip = `open file "${util.getDocPath(doc)}"`;
         this.iconPath = (doc.alias && labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly) ? new ThemeIcon('link') : ThemeIcon.File;
         this.resourceUri = Uri.file(util.getDocPath(doc));
-        this.contextValue = group === util.defGroup ? 'default' : 'child';
+        this.contextValue = group === util.defGroup ? 'default-child' : 'child';
     }
 }
