@@ -83,3 +83,7 @@
 ## 0.3.2
 
 - fix default list files operations
+
+## 0.3.4
+
+- better sidebar toggle

@@ -128,6 +128,7 @@ export function deleteFile() {
     });
 }
 
+let timeoutId;
 export async function openFile() {
     return commands.registerCommand(`${util.CMND_NAME}.openFile`, async (doc, type) => {
         await util.showDocument(util.getDocPath(doc), false);
@@ -136,8 +137,12 @@ export async function openFile() {
             const time = util.getConf('hideSidebarTimeOut');
 
             if (time > 0) {
-                setTimeout(() => {
-                    commands.executeCommand('workbench.action.toggleSidebarVisibility');
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+
+                timeoutId = setTimeout(() => {
+                    commands.executeCommand('workbench.action.minimizeOtherEditorsHideSidebar');
                 }, time * 1000);
             }
         }
@@ -148,7 +153,7 @@ export async function openFile() {
 export function deleteGroup() {
     return commands.registerCommand(`${util.CMND_NAME}.deleteGroup`, async (e) => {
         const list: any[] = util.getList();
-        let group = null;
+        let group: any = null;
         let children = [];
 
         // tree view
