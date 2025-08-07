@@ -5,9 +5,9 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.3.4",
+    "version": "0.3.5",
     "engines": {
-        "vscode": "^1.80.0"
+        "vscode": "^1.90.0"
     },
     "keywords": [
         "file",
@@ -18,8 +18,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onFileSystem:file",
-        "onView:fs_list"
+        "onFileSystem:file"
     ],
     "main": "./out/main",
     "contributes": {
@@ -124,21 +123,11 @@
                     "command": "fileShortcut.addCurrentFile",
                     "when": "!explorerResourceIsFolder",
                     "group": "fileshortcut"
-                },
-                {
-                    "command": "fileShortcut.deleteFile",
-                    "when": "!explorerResourceIsFolder",
-                    "group": "fileshortcut"
                 }
             ],
             "fileshortcut.editor.context": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "fscEnabled",
-                    "group": "fileshortcut"
-                },
-                {
-                    "command": "fileShortcut.deleteFile",
                     "when": "fscEnabled",
                     "group": "fileshortcut"
                 }
@@ -195,10 +184,6 @@
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "fscEnabled"
-                },
-                {
-                    "command": "fileShortcut.deleteFile",
                     "when": "fscEnabled"
                 },
                 {
@@ -291,9 +276,9 @@
         "watch": "npm run esbuild"
     },
     "devDependencies": {
-        "@types/node": "^22.5.0",
-        "@types/vscode": "^1.80.0",
-        "esbuild": "^0.23.1",
-        "typescript": "^5.5.4"
+        "@types/node": "^24.2.0",
+        "@types/vscode": "^1.90.0",
+        "esbuild": "^0.25.8",
+        "typescript": "^5.9.2"
     }
 }

@@ -128,8 +128,13 @@ export function getList() {
 }
 
 /* Other -------------------------------------------------------------------- */
+const pkg_label = 'File Shortcut:';
+
 export async function showMsg(txt, error = true) {
     error
-        ? window.showErrorMessage(`File Shortcut: ${txt}`)
-        : window.showInformationMessage(`File Shortcut: ${txt}`);
+        ? window.showErrorMessage(`${pkg_label} ${txt}`)
+        : window.showInformationMessage(`${pkg_label} ${txt}`);
+}
+export function showWarnMsg(txt, items) {
+    return window.showWarningMessage(`${pkg_label} ${txt}`, ...items);
 }

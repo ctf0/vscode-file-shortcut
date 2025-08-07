@@ -87,3 +87,10 @@
 ## 0.3.4
 
 - better sidebar toggle
+
+## 0.3.5
+
+- fix cant add file and keep getting cant add this file type
+- remove file deleted from (explorer & context) menus, as its kinda complex to do correctly
+- now the file delete is only from the fileshortcut view
+- better notification msg for adding/removing

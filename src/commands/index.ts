@@ -59,27 +59,33 @@ export function addCurrentFile() {
             const doc = window.activeTextEditor?.document;
             const filePath = e ? e.fsPath : doc?.uri.fsPath;
 
-            if (!doc || !filePath) {
-                return util.showMsg('sorry, this file type cant be added !');
+            if (!filePath) {
+                return util.showMsg(
+                    "sorry, this file type cant be added !"
+                );
             }
 
-            if (groupName === util.defGroup) {
-                list.push(filePath);
-            } else {
-                const groupIndex = util.getGroupIndexByName(groupName);
-
-                if (groupIndex > -1) {
-                    list[groupIndex].documents.push(filePath);
+            try {
+                if (groupName === util.defGroup) {
+                    addToList(list, filePath);
                 } else {
-                    list.unshift({
-                        name: groupName,
-                        documents: [filePath],
-                    });
-                }
-            }
+                    const groupIndex = util.getGroupIndexByName(groupName);
 
-            await util.updateConf('list', list);
-            util.showMsg('file added', false);
+                    if (groupIndex > -1) {
+                        addToList(list[groupIndex].documents, filePath);
+                    } else {
+                        list.unshift({
+                            name: groupName,
+                            documents: [filePath],
+                        });
+                    }
+                }
+
+                await util.updateConf('list', list);
+                util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}"`, false);
+            } catch (error) {
+                // console.error(error);
+            }
         }
     });
 }
@@ -87,44 +93,22 @@ export function addCurrentFile() {
 export function deleteFile() {
     return commands.registerCommand(`${util.CMND_NAME}.deleteFile`, async (e) => {
         const list: any[] = util.getList();
-        const filePath = e
-            ? e.doc // from the activity bar
-                ? e.doc
-                : e.fsPath // from explorer tree view
-            : window.activeTextEditor?.document.uri.fsPath; // from quick panel
+        const filePath = e.doc
+        const groupName = e.group;
+        const isDefaultGroup = groupName === util.defGroup;
+        const groupIndex = util.getGroupIndexByName(groupName);
 
-        let found: any;
-
-        for (let i = 0; i < list.length; i++) {
-            const current = list[i];
-            const type = typeof current;
-
-            if (
-                (type === 'string' && current === filePath) ||
-                (type === 'object' && current.documents.some((doc) => doc === filePath))
-            ) {
-                found = {
-                    index: i,
-                    type: type,
-                };
-                break;
-            }
-        }
-
-        if (!found) {
-            return util.showMsg('file not in list');
-        }
-
-        const i = found.index;
-
-        if (found.type === 'object') {
-            list[i].documents.splice(list[i].documents.indexOf(filePath), 1);
+        if (isDefaultGroup) {
+            list.splice(list.indexOf(filePath), 1);
         } else {
-            list.splice(i, 1);
+            list[groupIndex].documents.splice(
+                list[groupIndex].documents.indexOf(filePath),
+                1
+            );
         }
 
         await util.updateConf('list', list);
-        util.showMsg(`file "${util.getDocLabel(filePath, true)}" removed`, false);
+        util.showMsg(`file "${util.getDocLabel(filePath, true)}" removed from "${groupName}"`, false);
     });
 }
 
