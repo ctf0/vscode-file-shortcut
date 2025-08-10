@@ -266,8 +266,17 @@ export function treeFileNameDisplay() {
     })
 }
 
-function addToList(list: any[], filePath: any) {
-    if (!list.some((item) => item === filePath)) {
-        list.push(filePath)
+function addToList(list: any[], file: any) {
+    const exists = list.some(function(item) {
+        return typeof item === 'object'
+            ? item.filePath === file
+            : item === file
+    })
+
+    if (exists) {
+        util.showMsg(`File "${file}" is already in the list`, true)
+        throw new Error(`File "${file}" is already in the list`)
     }
+
+    return list.push(file)
 }

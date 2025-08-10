@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.3.6",
+    "version": "0.3.7",
     "engines": {
         "vscode": "^1.90.0"
     },

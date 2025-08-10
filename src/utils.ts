@@ -141,6 +141,3 @@ export async function showMsg(txt, error = true) {
         ? await window.showErrorMessage(`${pkg_label} ${txt}`)
         : await window.showInformationMessage(`${pkg_label} ${txt}`)
 }
-export function showWarnMsg(txt, items) {
-    return window.showWarningMessage(`${pkg_label} ${txt}`, ...items)
-}
