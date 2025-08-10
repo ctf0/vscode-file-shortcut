@@ -8,9 +8,10 @@ based on https://github.com/ejabu/vscode-file-shortcut + extra options
 - add/delete file
 - add/delete group
 - move file from group to another
-- add alias to file
+- add alias to file (group files only)
 - sort list
 - update file path on rename
+- separate list for both workspace/global files
 
 ### Example
 
@@ -26,5 +27,7 @@ based on https://github.com/ejabu/vscode-file-shortcut + extra options
             },
         ]
     },
+    "/path/to/somefile.txt",
+    "/path/to/somefile.txt"
 ]
 ```

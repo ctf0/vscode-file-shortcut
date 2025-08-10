@@ -5,7 +5,12 @@ export {showFileList} from './showFileList'
 /* File --------------------------------------------------------------------- */
 export function toggleFileAlias() {
     return commands.registerCommand(`${util.CMND_NAME}.toggleFileAlias`, async(e) => {
-        const {doc, group} = e
+        const {doc, group, scope} = e
+
+        if (!scope) {
+            return util.showMsg('scope is required to modify a file')
+        }
+
         const alias = doc?.alias
 
         const newAlias = await window.showInputBox({
@@ -23,8 +28,8 @@ export function toggleFileAlias() {
             return
         }
 
-        const list: any[] = util.getList()
-        const groupIndex = util.getGroupIndexByName(group)
+        const list: any[] = util.getListByScope(scope)
+        const groupIndex = list.findIndex((item) => item?.name === group)
 
         if (groupIndex > -1) {
             list[groupIndex].documents = list[groupIndex].documents.map((item) => {
@@ -43,7 +48,7 @@ export function toggleFileAlias() {
             })
         }
 
-        await util.updateConf('list', list)
+        await util.updateConfForScope('list', list, scope)
         const type = newAlias ? 'added' : ' removed'
 
         util.showMsg(`file alias ${type} for "${util.getFileName(util.getDocPath(doc))}"`, false)
@@ -52,7 +57,8 @@ export function toggleFileAlias() {
 
 export function addCurrentFile() {
     return commands.registerCommand(`${util.CMND_NAME}.addCurrentFile`, async(e) => {
-        const list: any[] = util.getList()
+        const scope: util.Scope = 'workspace'
+        const list: any[] = util.getListByScope(scope)
         const groupName = await util.selectOrCreateGroup(list)
 
         if (groupName) {
@@ -69,7 +75,7 @@ export function addCurrentFile() {
                 if (groupName === util.defGroup) {
                     addToList(list, filePath)
                 } else {
-                    const groupIndex = util.getGroupIndexByName(groupName)
+                    const groupIndex = list.findIndex((item) => item?.name === groupName)
 
                     if (groupIndex > -1) {
                         addToList(list[groupIndex].documents, filePath)
@@ -81,7 +87,8 @@ export function addCurrentFile() {
                     }
                 }
 
-                await util.updateConf('list', list)
+                await util.updateConfForScope('list', list, scope)
+
                 util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}"`, false)
             } catch (error) {
                 // console.error(error);
@@ -90,13 +97,61 @@ export function addCurrentFile() {
     })
 }
 
+export function addCurrentFileGlobal() {
+    return commands.registerCommand(`${util.CMND_NAME}.addCurrentFileGlobal`, async(e) => {
+        const scope: util.Scope = 'global'
+        const list: any[] = util.getListByScope(scope)
+        const groupName = await util.selectOrCreateGroup(list)
+
+        if (groupName) {
+            const doc = window.activeTextEditor?.document
+            const filePath = e ? e.fsPath : doc?.uri.fsPath
+
+            if (!filePath) {
+                return util.showMsg(
+                    "sorry, this file type cant be added !",
+                )
+            }
+
+            try {
+                if (groupName === util.defGroup) {
+                    addToList(list, filePath)
+                } else {
+                    const groupIndex = list.findIndex((item) => item?.name === groupName)
+
+                    if (groupIndex > -1) {
+                        addToList(list[groupIndex].documents, filePath)
+                    } else {
+                        list.unshift({
+                            name: groupName,
+                            documents: [filePath],
+                        })
+                    }
+                }
+
+                await util.updateConfForScope('list', list, scope)
+
+                util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}" (Global)`, false)
+            } catch {
+                // console.error(error);
+            }
+        }
+    })
+}
+
 export function deleteFile() {
     return commands.registerCommand(`${util.CMND_NAME}.deleteFile`, async(e) => {
-        const list: any[] = util.getList()
+        const scope: util.Scope | undefined = e.scope
+
+        if (!scope) {
+            return util.showMsg('scope is required to delete a file')
+        }
+
+        const list: any[] = util.getListByScope(scope)
         const filePath = e.doc
         const groupName = e.group
         const isDefaultGroup = groupName === util.defGroup
-        const groupIndex = util.getGroupIndexByName(groupName)
+        const groupIndex = list.findIndex((item) => item?.name === groupName)
 
         if (isDefaultGroup) {
             list.splice(list.indexOf(filePath), 1)
@@ -107,12 +162,14 @@ export function deleteFile() {
             )
         }
 
-        await util.updateConf('list', list)
+        await util.updateConfForScope('list', list, scope)
+
         util.showMsg(`file "${util.getDocLabel(filePath, true)}" removed from "${groupName}"`, false)
     })
 }
 
 let timeoutId
+
 export async function openFile() {
     return commands.registerCommand(`${util.CMND_NAME}.openFile`, async(doc, type) => {
         await util.showDocument(util.getDocPath(doc), false)
@@ -136,7 +193,13 @@ export async function openFile() {
 /* Group -------------------------------------------------------------------- */
 export function deleteGroup() {
     return commands.registerCommand(`${util.CMND_NAME}.deleteGroup`, async(e) => {
-        const list: any[] = util.getList()
+        const scope: util.Scope | undefined = e?.scope
+
+        if (!scope) {
+            return util.showMsg('scope is required to delete a group')
+        }
+
+        const list: any[] = util.getListByScope(scope)
         let group: any = null
         let children = []
 
@@ -148,25 +211,28 @@ export function deleteGroup() {
         // cmnd panel
         else {
             group = await util.pickAGroup(util.getGroups(list))
-            children = group ? list[util.getGroupIndexByName(group)].documents : []
+            const gi = group ? list.findIndex((item) => item?.name === group) : -1
+
+            children = gi > -1 ? list[gi].documents : []
         }
 
         if (group) {
             const child = children.length
 
             if (!child) {
-                removeGroupAndChild(list, group)
+                await removeGroupAndChild(list, group, scope)
             } else {
                 window.showWarningMessage(
                     `File Shortcut: "${group} & children (${child} items)" will be removed as well, continue ?!`,
                     ...['Yes'],
-                ).then(async(e) => {
-                    if (e) {
+                ).then(async(yes) => {
+                    if (yes) {
                         if (group === util.defGroup) {
-                            await util.updateConf('list', util.getListByType(list, 'object'))
+                            await util.updateConfForScope('list', util.getListByType(list, 'object'), scope)
+
                             util.showMsg(`"${group}" files are removed`)
                         } else {
-                            removeGroupAndChild(list, group)
+                            await removeGroupAndChild(list, group, scope)
                         }
                     }
                 })
@@ -177,23 +243,35 @@ export function deleteGroup() {
 
 export function renameGroup() {
     return commands.registerCommand(`${util.CMND_NAME}.renameGroup`, async(e) => {
-        const {group} = e
-        const list: any[] = util.getList()
+        const {group, scope} = e
+
+        if (!scope) {
+            return util.showMsg('scope is required to rename a group')
+        }
+
+        const list: any[] = util.getListByScope(scope)
         const groupsList = util.getGroups(list)
         const name = await util.newGroupName(groupsList, group)
 
         if (name) {
-            const groupIndex = util.getGroupIndexByName(group)
+            const groupIndex = list.findIndex((item) => item?.name === group)
+
             list[groupIndex].name = name
 
-            await util.updateConf('list', list)
+            await util.updateConfForScope('list', list, scope)
         }
     })
 }
 
 export function changeFileGroup() {
     return commands.registerCommand(`${util.CMND_NAME}.changeFileGroup`, async(e) => {
-        const list: any[] = util.getList()
+        const scope: util.Scope | undefined = e?.scope
+
+        if (!scope) {
+            return util.showMsg('scope is required to move a file')
+        }
+
+        const list: any[] = util.getListByScope(scope)
         const toGroup = await util.selectOrCreateGroup(list)
 
         const {doc, group} = e
@@ -210,7 +288,7 @@ export function changeFileGroup() {
         if (group === util.defGroup) {
             list.splice(list.indexOf(doc), 1)
         } else {
-            const groupIndex = util.getGroupIndexByName(group)
+            const groupIndex = list.findIndex((item) => item?.name === group)
             const di = list[groupIndex].documents.indexOf(doc)
 
             list[groupIndex].documents.splice(di, 1)
@@ -220,7 +298,7 @@ export function changeFileGroup() {
         if (toGroup === util.defGroup) {
             list.push(doc)
         } else {
-            const groupIndex = util.getGroupIndexByName(toGroup)
+            const groupIndex = list.findIndex((item) => item?.name === toGroup)
 
             if (groupIndex > -1) {
                 list[groupIndex].documents.push(doc)
@@ -232,18 +310,27 @@ export function changeFileGroup() {
             }
         }
 
-        await util.updateConf('list', list)
+        await util.updateConfForScope('list', list, scope)
+
         util.showMsg(`"${util.getDocLabel(doc)}" moved from "${group}" to "${toGroup}"`, false)
     })
 }
 
-function removeGroupAndChild(list, group) {
+async function removeGroupAndChild(list, group, scope?: util.Scope) {
     if (group == util.defGroup) {
         return util.showMsg(`default group "${group}" cant be removed`)
     }
 
-    list.splice(util.getGroupIndexByName(group), 1)
-    util.updateConf('list', list)
+    const groupIndex = list.findIndex((item) => item?.name === group)
+
+    if (groupIndex === -1) {
+        return util.showMsg(`group "${group}" not found`)
+    }
+
+    list.splice(groupIndex, 1)
+
+    await util.updateConfForScope('list', list, scope!)
+
     util.showMsg(`group "${group}" removed`, false)
 }
 

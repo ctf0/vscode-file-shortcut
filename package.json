@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.3.7",
+    "version": "0.4.0",
     "engines": {
         "vscode": "^1.90.0"
     },
@@ -34,8 +34,14 @@
         "views": {
             "file-shortcut": [
                 {
-                    "id": "fs_list",
-                    "name": "Files List"
+                    "id": "fs_list_workspace",
+                    "name": "Workspace Files",
+                    "icon": "img/file.svg"
+                },
+                {
+                    "id": "fs_list_global",
+                    "name": "Global Files",
+                    "icon": "img/file.svg"
                 }
             ]
         },
@@ -48,7 +54,13 @@
             },
             {
                 "command": "fileShortcut.addCurrentFile",
-                "title": "Add Current File To List",
+                "title": "Add Current File To Local List",
+                "category": "File Shortcut",
+                "icon": "$(add)"
+            },
+            {
+                "command": "fileShortcut.addCurrentFileGlobal",
+                "title": "Add Current File To Global List",
                 "category": "File Shortcut",
                 "icon": "$(add)"
             },
@@ -97,21 +109,11 @@
         ],
         "submenus": [
             {
-                "id": "fileshortcut.editor.context",
-                "label": "File Shortcut"
-            },
-            {
                 "id": "fileshortcut.explorer.context",
                 "label": "File Shortcut"
             }
         ],
         "menus": {
-            "editor/context": [
-                {
-                    "submenu": "fileshortcut.editor.context",
-                    "group": "fileshortcut"
-                }
-            ],
             "explorer/context": [
                 {
                     "submenu": "fileshortcut.explorer.context",
@@ -123,67 +125,74 @@
                     "command": "fileShortcut.addCurrentFile",
                     "when": "!explorerResourceIsFolder",
                     "group": "fileshortcut"
-                }
-            ],
-            "fileshortcut.editor.context": [
+                },
                 {
-                    "command": "fileShortcut.addCurrentFile",
-                    "when": "fscEnabled",
+                    "command": "fileShortcut.addCurrentFileGlobal",
+                    "when": "!explorerResourceIsFolder",
                     "group": "fileshortcut"
                 }
             ],
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == fs_list && fscEnabled",
+                    "when": "view == fs_list_workspace && fscEnabled",
+                    "group": "navigation"
+                },
+                {
+                    "command": "fileShortcut.addCurrentFileGlobal",
+                    "when": "view == fs_list_global && fscEnabled",
                     "group": "navigation"
                 },
                 {
                     "command": "fileShortcut.sort",
-                    "when": "view == fs_list && fscHasFiles",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
                     "group": "navigation"
                 },
                 {
                     "command": "fileShortcut.DisplayFileNameInListAs",
-                    "when": "view == fs_list && fscHasFiles",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
                     "group": "navigation"
                 },
                 {
                     "command": "fileShortcut.showFileList",
-                    "when": "view == fs_list && fscHasFiles",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "fileShortcut.deleteFile",
-                    "when": "view == fs_list && viewItem =~ /(child|default-child)/",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/",
                     "group": "inline"
                 },
                 {
                     "command": "fileShortcut.toggleFileAlias",
-                    "when": "view == fs_list && viewItem == child",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == child",
                     "group": "inline"
                 },
                 {
                     "command": "fileShortcut.changeFileGroup",
-                    "when": "view == fs_list && viewItem =~ /(child|default-child)/",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/",
                     "group": "inline"
                 },
                 {
                     "command": "fileShortcut.deleteGroup",
-                    "when": "view == fs_list && viewItem == parent",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent",
                     "group": "inline"
                 },
                 {
                     "command": "fileShortcut.renameGroup",
-                    "when": "view == fs_list && viewItem == parent",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent",
                     "group": "inline"
                 }
             ],
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
+                    "when": "fscEnabled"
+                },
+                {
+                    "command": "fileShortcut.addCurrentFileGlobal",
                     "when": "fscEnabled"
                 },
                 {
@@ -208,6 +217,14 @@
                 },
                 {
                     "command": "fileShortcut.renameGroup",
+                    "when": "false"
+                },
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "when": "false"
+                },
+                {
+                    "command": "fileShortcut.deleteGroup",
                     "when": "false"
                 }
             ]

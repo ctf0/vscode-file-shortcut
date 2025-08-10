@@ -15,6 +15,7 @@ export async function activate({subscriptions}) {
         workspace.onDidChangeConfiguration(async(e: any) => {
             if (e.affectsConfiguration(util.CMND_NAME)) {
                 util.setUnGroupedListName()
+
                 await toggleFscHasFiles()
             }
         }),
@@ -25,6 +26,7 @@ export async function activate({subscriptions}) {
         // file
         cmnds.openFile(),
         cmnds.addCurrentFile(),
+        cmnds.addCurrentFileGlobal(),
         cmnds.deleteFile(),
         cmnds.toggleFileAlias(),
         // group
@@ -34,7 +36,9 @@ export async function activate({subscriptions}) {
         // tree
         cmnds.sortTreeList(),
         cmnds.treeFileNameDisplay(),
-        window.registerTreeDataProvider('fs_list', new TreeProvider()),
+        // Views
+        window.registerTreeDataProvider('fs_list_workspace', new TreeProvider('workspace')),
+        window.registerTreeDataProvider('fs_list_global', new TreeProvider('global')),
         // rename
         workspace.onDidRenameFiles(async(event: FileRenameEvent) => await updateSavedPath(event)),
     )
@@ -59,7 +63,15 @@ async function updateSavedPath(event: FileRenameEvent) {
             }
 
             // update file path
-            const list: any[] = util.getList()
+            // Update the list in the scope where the path currently exists (workspace preferred)
+            const listWorkspace: any[] = util.getListByScope('workspace')
+            const listGlobal: any[] = util.getListByScope('global')
+            const inWorkspace = listWorkspace.some((current) => {
+                const type = typeof current
+
+                return (type === 'string' && current === from) || (type === 'object' && current.documents.some((doc) => util.getDocPath(doc) === from))
+            })
+            const list: any[] = inWorkspace ? listWorkspace : listGlobal
             let found: any
 
             for (let i = 0; i < list.length; i++) {
@@ -98,7 +110,12 @@ async function updateSavedPath(event: FileRenameEvent) {
                 list[i] = to
             }
 
-            await util.updateConf('list', list)
+            if (inWorkspace) {
+                await util.updateConfForScope('list', list, 'workspace')
+            } else {
+                await util.updateConfForScope('list', list, 'global')
+            }
+
             util.showMsg(`file "${util.getFileName(from)}" updated to "${util.getFileName(to)}"`, false)
         } catch (error) {
             // console.error(error)

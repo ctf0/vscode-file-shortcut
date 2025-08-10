@@ -13,7 +13,7 @@ export default class TreeProvider implements TreeDataProvider<any> {
     _onDidChangeTreeData = new EventEmitter()
     onDidChangeTreeData = this._onDidChangeTreeData.event
 
-    constructor() {
+    constructor(private scope: util.Scope = 'workspace') {
         workspace.onDidChangeConfiguration((e: any) => {
             if (e.affectsConfiguration(util.CMND_NAME)) {
                 setTimeout(() => {
@@ -25,7 +25,8 @@ export default class TreeProvider implements TreeDataProvider<any> {
 
     async getList() {
         const labelType = util.getConf('DisplayFileNameInListAs')
-        let list: any[] = util.getList()
+        let list: any[] = this.scope ? util.getListByScope(this.scope) : util.getList()
+
         list = util.getListByType(list, 'object')
             .concat([{
                 name: util.defGroup,
@@ -50,7 +51,9 @@ export default class TreeProvider implements TreeDataProvider<any> {
                         title: 'Execute',
                         arguments: [doc, 'treeview'],
                     },
+                    this.scope,
                 )),
+                this.scope,
             ))
     }
 
@@ -106,11 +109,13 @@ export default class TreeProvider implements TreeDataProvider<any> {
 class TreeGroup extends TreeItem {
     children
     group
+    scope: util.Scope
 
     constructor(
         group,
         label,
         children,
+        scope: util.Scope,
     ) {
         super(
             label,
@@ -122,6 +127,7 @@ class TreeGroup extends TreeItem {
         this.group = group
         this.children = children
         this.contextValue = group === util.defGroup ? 'default' : 'parent'
+        this.scope = scope
     }
 }
 
@@ -129,6 +135,7 @@ class TreeGroupItem extends TreeItem {
     group
     doc
     labelType
+    scope: util.Scope
 
     constructor(
         group,
@@ -136,12 +143,14 @@ class TreeGroupItem extends TreeItem {
         labelType,
         label,
         command,
+        scope: util.Scope,
     ) {
         super(label)
 
         this.group = group
         this.doc = doc
         this.command = command
+        this.scope = scope
         this.tooltip = `open file "${util.getDocPath(doc)}"`
         this.iconPath = (doc.alias && labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly) ? new ThemeIcon('link') : ThemeIcon.File
         this.resourceUri = Uri.file(util.getDocPath(doc))

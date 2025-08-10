@@ -98,3 +98,8 @@
 ## 0.3.6
 
 - fix cant add file to list, missed it from last release
+
+## 0.4.0
+
+- support saving files to both user & workspace settings
+- have separate views to list both
