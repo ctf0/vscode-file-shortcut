@@ -94,3 +94,7 @@
 - remove file deleted from (explorer & context) menus, as its kinda complex to do correctly
 - now the file delete is only from the fileshortcut view
 - better notification msg for adding/removing
+
+## 0.3.6
+
+- fix cant add file to list, missed it from last release

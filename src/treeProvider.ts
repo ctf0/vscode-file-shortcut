@@ -6,34 +6,34 @@ import {
     TreeItemCollapsibleState,
     Uri,
     workspace,
-} from 'vscode';
-import * as util from './utils';
+} from 'vscode'
+import * as util from './utils'
 
 export default class TreeProvider implements TreeDataProvider<any> {
-    _onDidChangeTreeData = new EventEmitter();
-    onDidChangeTreeData = this._onDidChangeTreeData.event;
+    _onDidChangeTreeData = new EventEmitter()
+    onDidChangeTreeData = this._onDidChangeTreeData.event
 
     constructor() {
         workspace.onDidChangeConfiguration((e: any) => {
             if (e.affectsConfiguration(util.CMND_NAME)) {
                 setTimeout(() => {
-                    this._onDidChangeTreeData.fire(undefined);
-                }, 300);
+                    this._onDidChangeTreeData.fire(undefined)
+                }, 300)
             }
-        });
+        })
     }
 
     async getList() {
-        const labelType = util.getConf('DisplayFileNameInListAs');
-        let list: any[] = util.getList();
+        const labelType = util.getConf('DisplayFileNameInListAs')
+        let list: any[] = util.getList()
         list = util.getListByType(list, 'object')
             .concat([{
                 name: util.defGroup,
                 documents: list.filter((e) => typeof e === 'string') || [],
-            }]);
+            }])
 
         return this.sortList(list)
-            .map(({ name: group, documents }) => new TreeGroup(
+            .map(({name: group, documents}) => new TreeGroup(
                 group,
                 `${group} (${documents.length} items)`,
                 documents.map((doc) => new TreeGroupItem(
@@ -51,57 +51,61 @@ export default class TreeProvider implements TreeDataProvider<any> {
                         arguments: [doc, 'treeview'],
                     },
                 )),
-            ));
+            ))
     }
 
     sortList(list) {
         return list.map((item) => {
             if (util.getConf('sort') === 'alpha') {
                 item.documents.sort((a, b) => {
-                    a = util.getDocPath(a);
-                    b = util.getDocPath(b);
+                    a = util.getDocPath(a)
+                    b = util.getDocPath(b)
 
-                    const a_name = util.getFileName(a).toLowerCase();
-                    const b_name = util.getFileName(b).toLowerCase();
+                    const a_name = util.getFileName(a).toLowerCase()
+                    const b_name = util.getFileName(b).toLowerCase()
 
-                    if (a_name < b_name) { return -1; }
+                    if (a_name < b_name) {
+                        return -1
+                    }
 
-                    if (a_name > b_name) { return 1; }
+                    if (a_name > b_name) {
+                        return 1
+                    }
 
-                    return 0;
-                });
+                    return 0
+                })
             } else {
                 item.documents.sort((a, b) => {
-                    a = util.getDocPath(a);
-                    b = util.getDocPath(b);
+                    a = util.getDocPath(a)
+                    b = util.getDocPath(b)
 
-                    const a_name = util.getFileName(a);
-                    const b_name = util.getFileName(b);
+                    const a_name = util.getFileName(a)
+                    const b_name = util.getFileName(b)
 
-                    return a_name.length - b_name.length || a_name.localeCompare(b_name);
-                });
+                    return a_name.length - b_name.length || a_name.localeCompare(b_name)
+                })
             }
 
-            return item;
-        });
+            return item
+        })
     }
 
     async getChildren(element) {
         if (element === undefined) {
-            return this.getList();
+            return this.getList()
         }
 
-        return element.children;
+        return element.children
     }
 
     getTreeItem(file) {
-        return file;
+        return file
     }
 }
 
 class TreeGroup extends TreeItem {
-    children;
-    group;
+    children
+    group
 
     constructor(
         group,
@@ -113,18 +117,18 @@ class TreeGroup extends TreeItem {
             children === undefined
                 ? TreeItemCollapsibleState.None
                 : TreeItemCollapsibleState.Expanded,
-        );
+        )
 
-        this.group = group;
-        this.children = children;
-        this.contextValue = group === util.defGroup ? 'default' : 'parent';
+        this.group = group
+        this.children = children
+        this.contextValue = group === util.defGroup ? 'default' : 'parent'
     }
 }
 
 class TreeGroupItem extends TreeItem {
-    group;
-    doc;
-    labelType;
+    group
+    doc
+    labelType
 
     constructor(
         group,
@@ -133,14 +137,14 @@ class TreeGroupItem extends TreeItem {
         label,
         command,
     ) {
-        super(label);
+        super(label)
 
-        this.group = group;
-        this.doc = doc;
-        this.command = command;
-        this.tooltip = `open file "${util.getDocPath(doc)}"`;
-        this.iconPath = (doc.alias && labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly) ? new ThemeIcon('link') : ThemeIcon.File;
-        this.resourceUri = Uri.file(util.getDocPath(doc));
-        this.contextValue = group === util.defGroup ? 'default-child' : 'child';
+        this.group = group
+        this.doc = doc
+        this.command = command
+        this.tooltip = `open file "${util.getDocPath(doc)}"`
+        this.iconPath = (doc.alias && labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly) ? new ThemeIcon('link') : ThemeIcon.File
+        this.resourceUri = Uri.file(util.getDocPath(doc))
+        this.contextValue = group === util.defGroup ? 'default-child' : 'child'
     }
 }
