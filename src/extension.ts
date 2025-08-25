@@ -79,12 +79,12 @@ async function updateSavedPath(event: FileRenameEvent) {
                 const type = typeof current
 
                 if (
-                    (type === 'string' && current === from) ||
-                    (type === 'object' && current.documents.some((doc) => util.getDocPath(doc) === from))
+                    (type === 'string' && current === from)
+                    || (type === 'object' && current.documents.some((doc) => util.getDocPath(doc) === from))
                 ) {
                     found = {
-                        index : i,
-                        type  : type,
+                        index: i,
+                        type: type,
                     }
                     break
                 }

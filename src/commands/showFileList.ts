@@ -43,16 +43,16 @@ export function showFileList() {
 
 async function showQuickPick(filePaths) {
     const items: QuickPickItem[] = filePaths.map((doc) => ({
-        label       : util.getDocLabel(doc),
-        description : doc?.alias ? `(${doc.alias})` : '',
-        detail      : util.getDocPath(doc),
+        label: util.getDocLabel(doc),
+        description: doc?.alias ? `(${doc.alias})` : '',
+        detail: util.getDocPath(doc),
     }))
 
     await window.showQuickPick(items, {
-        placeHolder        : 'Pick a file to open',
-        matchOnDescription : true,
-        matchOnDetail      : true,
-        canPickMany        : true,
+        placeHolder: 'Pick a file to open',
+        matchOnDescription: true,
+        matchOnDetail: true,
+        canPickMany: true,
     }).then(async(selections: any) => {
         if (selections) {
             for (const selection of selections) {

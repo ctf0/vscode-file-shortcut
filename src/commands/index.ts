@@ -66,9 +66,7 @@ export function addCurrentFile() {
             const filePath = e ? e.fsPath : doc?.uri.fsPath
 
             if (!filePath) {
-                return util.showMsg(
-                    "sorry, this file type cant be added !",
-                )
+                return util.showMsg('sorry, this file type cant be added !')
             }
 
             try {
@@ -108,9 +106,7 @@ export function addCurrentFileGlobal() {
             const filePath = e ? e.fsPath : doc?.uri.fsPath
 
             if (!filePath) {
-                return util.showMsg(
-                    "sorry, this file type cant be added !",
-                )
+                return util.showMsg('sorry, this file type cant be added !')
             }
 
             try {
