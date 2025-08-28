@@ -100,7 +100,7 @@ export async function showDocument(filePath, preserveFocus = true) {
             preview: preserveFocus,
             preserveFocus: preserveFocus,
         })
-    } catch (error) {
+    } catch {
         return showMsg(`file not found "${filePath}".`)
     }
 }
@@ -126,7 +126,7 @@ export function getGroups(list) {
 export async function selectOrCreateGroup(list) {
     const newGroup = 'create new group ...'
     const groupsList = getGroups(list).concat([newGroup])
-    const selection = await pickAGroup(groupsList)
+    const selection = await pickFromList(groupsList)
 
     if (selection) {
         if (selection === newGroup) {
@@ -157,8 +157,8 @@ export function newGroupName(groupsList, val = '') {
     })
 }
 
-export async function pickAGroup(list) {
-    return window.showQuickPick(list, {placeHolder: 'choose a group ...'})
+export async function pickFromList(list, ph = 'choose a group ...') {
+    return window.showQuickPick(list, {placeHolder: ph})
 }
 
 export function getList() {

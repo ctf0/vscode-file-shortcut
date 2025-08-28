@@ -55,84 +55,55 @@ export function toggleFileAlias() {
     })
 }
 
-export function addCurrentFile() {
-    return commands.registerCommand(`${util.CMND_NAME}.addCurrentFile`, async(e) => {
-        const scope: util.Scope = 'workspace'
-        const list: any[] = util.getListByScope(scope)
-        const groupName = await util.selectOrCreateGroup(list)
+export async function addCurrentFile(e) {
+    const scope = await util.pickFromList([
+        'workspace',
+        'global',
+    ], 'choose a scope ...')
 
-        if (groupName) {
-            const doc = window.activeTextEditor?.document
-            const filePath = e ? e.fsPath : doc?.uri.fsPath
+    if (!scope) {
+        return
+    }
 
-            if (!filePath) {
-                return util.showMsg('sorry, this file type cant be added !')
-            }
+    const list: any[] = util.getListByScope(scope)
+    const groupName = await util.selectOrCreateGroup(list)
 
-            try {
-                if (groupName === util.defGroup) {
-                    addToList(list, filePath)
-                } else {
-                    const groupIndex = list.findIndex((item) => item?.name === groupName)
+    if (groupName) {
+        const doc = window.activeTextEditor?.document
+        let filePath = doc?.uri.fsPath
 
-                    if (groupIndex > -1) {
-                        addToList(list[groupIndex].documents, filePath)
-                    } else {
-                        list.unshift({
-                            name: groupName,
-                            documents: [filePath],
-                        })
-                    }
-                }
-
-                await util.updateConfForScope('list', list, scope)
-
-                util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}"`, false)
-            } catch (error) {
-                // console.error(error);
-            }
+        // when using context menu
+        if (e) {
+            filePath = e?.fsPath
         }
-    })
-}
 
-export function addCurrentFileGlobal() {
-    return commands.registerCommand(`${util.CMND_NAME}.addCurrentFileGlobal`, async(e) => {
-        const scope: util.Scope = 'global'
-        const list: any[] = util.getListByScope(scope)
-        const groupName = await util.selectOrCreateGroup(list)
-
-        if (groupName) {
-            const doc = window.activeTextEditor?.document
-            const filePath = e ? e.fsPath : doc?.uri.fsPath
-
-            if (!filePath) {
-                return util.showMsg('sorry, this file type cant be added !')
-            }
-
-            try {
-                if (groupName === util.defGroup) {
-                    addToList(list, filePath)
-                } else {
-                    const groupIndex = list.findIndex((item) => item?.name === groupName)
-
-                    if (groupIndex > -1) {
-                        addToList(list[groupIndex].documents, filePath)
-                    } else {
-                        list.unshift({
-                            name: groupName,
-                            documents: [filePath],
-                        })
-                    }
-                }
-
-                await util.updateConfForScope('list', list, scope)
-
-                util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}" (Global)`, false)
-            } catch {
-                // console.error(error);
-            }
+        if (!filePath) {
+            return util.showMsg('sorry, this file type cant be added !')
         }
-    })
+
+        try {
+            if (groupName === util.defGroup) {
+                addToList(list, filePath)
+            } else {
+                const groupIndex = list.findIndex((item) => item?.name === groupName)
+
+                if (groupIndex > -1) {
+                    addToList(list[groupIndex].documents, filePath)
+                } else {
+                    list.unshift({
+                        name: groupName,
+                        documents: [filePath],
+                    })
+                }
+            }
+
+            await util.updateConfForScope('list', list, scope)
+
+            util.showMsg(`file "${util.getDocLabel(filePath)}" added to "${groupName}"`, false)
+        } catch (error) {
+            // console.error(error);
+        }
+    }
 }
 
 export function deleteFile() {
@@ -152,10 +123,17 @@ export function deleteFile() {
         if (isDefaultGroup) {
             list.splice(list.indexOf(filePath), 1)
         } else {
-            list[groupIndex].documents.splice(
-                list[groupIndex].documents.indexOf(filePath),
-                1,
-            )
+            if (typeof filePath == 'object') {
+                list[groupIndex].documents.splice(
+                    list[groupIndex].documents.findIndex((item) => item.alias == filePath.alias),
+                    1,
+                )
+            } else {
+                list[groupIndex].documents.splice(
+                    list[groupIndex].documents.indexOf(filePath),
+                    1,
+                )
+            }
         }
 
         await util.updateConfForScope('list', list, scope)
@@ -206,7 +184,7 @@ export function deleteGroup() {
         }
         // cmnd panel
         else {
-            group = await util.pickAGroup(util.getGroups(list))
+            group = await util.pickFromList(util.getGroups(list))
             const gi = group ? list.findIndex((item) => item?.name === group) : -1
 
             children = gi > -1 ? list[gi].documents : []
@@ -332,7 +310,7 @@ async function removeGroupAndChild(list, group, scope?: util.Scope) {
 
 // Tree
 export function sortTreeList() {
-    return commands.registerCommand(`${util.CMND_NAME}.sort`, (e) => {
+    return commands.registerCommand(`${util.CMND_NAME}.sort`, () => {
         const sortType = util.getConf('sort') === 'length' ? 'alpha' : 'length'
 
         return util.updateConf('sort', sortType)
@@ -340,7 +318,7 @@ export function sortTreeList() {
 }
 
 export function treeFileNameDisplay() {
-    return commands.registerCommand(`${util.CMND_NAME}.DisplayFileNameInListAs`, (e) => {
+    return commands.registerCommand(`${util.CMND_NAME}.DisplayFileNameInListAs`, () => {
         const displayType = util.getConf('DisplayFileNameInListAs') === util.SHOW_FILE_NAME_IN_LIST_AS.nameAndAlias
             ? util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly
             : util.SHOW_FILE_NAME_IN_LIST_AS.nameAndAlias

@@ -20,13 +20,13 @@ export async function activate({subscriptions}) {
             }
         }),
         // on new document
-        window.onDidChangeActiveTextEditor(async(e) => await toggleFscEnabled()),
+        window.onDidChangeActiveTextEditor(async() => await toggleFscEnabled()),
         // list
         cmnds.showFileList(),
         // file
         cmnds.openFile(),
-        cmnds.addCurrentFile(),
-        cmnds.addCurrentFileGlobal(),
+        commands.registerCommand(`${util.CMND_NAME}.addCurrentFile`, async(e) => await cmnds.addCurrentFile(e)),
+        commands.registerCommand(`${util.CMND_NAME}.addCurrentFileContext`, async(e) => await cmnds.addCurrentFile(e)),
         cmnds.deleteFile(),
         cmnds.toggleFileAlias(),
         // group

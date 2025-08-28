@@ -48,18 +48,18 @@ async function showQuickPick(filePaths) {
         detail: util.getDocPath(doc),
     }))
 
-    await window.showQuickPick(items, {
+    const selections: any = await window.showQuickPick(items, {
         placeHolder: 'Pick a file to open',
         matchOnDescription: true,
         matchOnDetail: true,
         canPickMany: true,
-    }).then(async(selections: any) => {
-        if (selections) {
-            for (const selection of selections) {
-                await openFile(selection.detail)
-            }
-        }
     })
+
+    if (selections.length) {
+        for (const selection of selections) {
+            await openFile(selection.detail)
+        }
+    }
 }
 
 async function openFile(filePath: string) {

@@ -103,3 +103,8 @@
 
 - support saving files to both user & workspace settings
 - have separate views to list both
+
+## 0.4.2
+
+- fix removing wrong item if it have an alias
+- remove `fileShortcut.addCurrentFileGlobal` and instead show a picker

@@ -5,7 +5,7 @@
     "icon": "img/file.png",
     "publisher": "ctf0",
     "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "engines": {
         "vscode": "^1.90.0"
     },
@@ -54,14 +54,13 @@
             },
             {
                 "command": "fileShortcut.addCurrentFile",
-                "title": "Add Current File To Local List",
+                "title": "Add Current File To List",
                 "category": "File Shortcut",
                 "icon": "$(add)"
             },
             {
-                "command": "fileShortcut.addCurrentFileGlobal",
-                "title": "Add Current File To Global List",
-                "category": "File Shortcut",
+                "command": "fileShortcut.addCurrentFileContext",
+                "title": "File Shortcut: Add Current File To List",
                 "icon": "$(add)"
             },
             {
@@ -107,27 +106,17 @@
                 "icon": "$(whole-word)"
             }
         ],
-        "submenus": [
-            {
-                "id": "fileshortcut.explorer.context",
-                "label": "File Shortcut"
-            }
-        ],
         "menus": {
-            "explorer/context": [
+            "editor/context": [
                 {
-                    "submenu": "fileshortcut.explorer.context",
+                    "command": "fileShortcut.addCurrentFileContext",
+                    "when": "fscEnabled",
                     "group": "fileshortcut"
                 }
             ],
-            "fileshortcut.explorer.context": [
+            "explorer/context": [
                 {
-                    "command": "fileShortcut.addCurrentFile",
-                    "when": "!explorerResourceIsFolder",
-                    "group": "fileshortcut"
-                },
-                {
-                    "command": "fileShortcut.addCurrentFileGlobal",
+                    "command": "fileShortcut.addCurrentFileContext",
                     "when": "!explorerResourceIsFolder",
                     "group": "fileshortcut"
                 }
@@ -135,12 +124,7 @@
             "view/title": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "view == fs_list_workspace && fscEnabled",
-                    "group": "navigation"
-                },
-                {
-                    "command": "fileShortcut.addCurrentFileGlobal",
-                    "when": "view == fs_list_global && fscEnabled",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscEnabled",
                     "group": "navigation"
                 },
                 {
@@ -189,10 +173,6 @@
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
-                    "when": "fscEnabled"
-                },
-                {
-                    "command": "fileShortcut.addCurrentFileGlobal",
                     "when": "fscEnabled"
                 },
                 {
