@@ -29,8 +29,8 @@ export default class TreeProvider implements TreeDataProvider<any> {
 
         list = util.getListByType(list, 'object')
             .concat([{
-                name: util.defGroup,
-                documents: list.filter((e) => typeof e === 'string') || [],
+                name      : util.defGroup,
+                documents : list.filter((e) => typeof e === 'string') || [],
             }])
 
         return this.sortList(list)
@@ -47,9 +47,9 @@ export default class TreeProvider implements TreeDataProvider<any> {
                         labelType === util.SHOW_FILE_NAME_IN_LIST_AS.aliasOnly,
                     ),
                     {
-                        command: `${util.CMND_NAME}.openFile`,
-                        title: 'Execute',
-                        arguments: [doc, 'treeview'],
+                        command   : `${util.CMND_NAME}.openFile`,
+                        title     : 'Execute',
+                        arguments : [doc, 'treeview'],
                     },
                     this.scope,
                 )),
@@ -109,7 +109,7 @@ export default class TreeProvider implements TreeDataProvider<any> {
 class TreeGroup extends TreeItem {
     children
     group
-    scope: util.Scope
+    scope : util.Scope
 
     constructor(
         group,
@@ -135,7 +135,7 @@ class TreeGroupItem extends TreeItem {
     group
     doc
     labelType
-    scope: util.Scope
+    scope : util.Scope
 
     constructor(
         group,

@@ -3,8 +3,8 @@ import {ConfigurationTarget, window, workspace} from 'vscode'
 
 export const CMND_NAME = 'fileShortcut'
 export const SHOW_FILE_NAME_IN_LIST_AS = {
-    nameAndAlias: 1,
-    aliasOnly: 2,
+    nameAndAlias : 1,
+    aliasOnly    : 2,
 }
 
 export type Scope = 'workspace' | 'global'
@@ -96,9 +96,9 @@ export async function showDocument(filePath, preserveFocus = true) {
         const document = await workspace.openTextDocument(filePath)
 
         return window.showTextDocument(document, {
-            viewColumn: getConf('OpenInNewGroup') ? -2 : activeColumn,
-            preview: preserveFocus,
-            preserveFocus: preserveFocus,
+            viewColumn    : getConf('OpenInNewGroup') ? -2 : activeColumn,
+            preview       : preserveFocus,
+            preserveFocus : preserveFocus,
         })
     } catch {
         return showMsg(`file not found "${filePath}".`)
@@ -143,8 +143,8 @@ export async function selectOrCreateGroup(list) {
 
 export function newGroupName(groupsList, val = '') {
     return window.showInputBox({
-        placeHolder: 'enter a new group name ...',
-        value: val,
+        placeHolder : 'enter a new group name ...',
+        value       : val,
         validateInput(v) {
             if (!v) {
                 return 'you have to add a name'

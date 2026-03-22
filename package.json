@@ -1,95 +1,56 @@
 {
-    "name": "file-shortcut",
-    "displayName": "File Shortcut",
-    "description": "add/open/delete your favorite file list",
-    "icon": "img/file.png",
-    "publisher": "ctf0",
-    "repository": "https://github.com/ctf0/vscode-file-shortcut",
-    "version": "0.4.2",
-    "engines": {
-        "vscode": "^1.90.0"
-    },
-    "keywords": [
-        "file",
-        "bookmark",
-        "shortcut"
+    "activationEvents": [
+        "onFileSystem:file"
     ],
     "categories": [
         "Other"
     ],
-    "activationEvents": [
-        "onFileSystem:file"
-    ],
-    "main": "./out/main",
     "contributes": {
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "file-shortcut",
-                    "title": "File Shortcut",
-                    "icon": "img/file.svg"
-                }
-            ]
-        },
-        "views": {
-            "file-shortcut": [
-                {
-                    "id": "fs_list_workspace",
-                    "name": "Workspace Files",
-                    "icon": "img/file.svg"
-                },
-                {
-                    "id": "fs_list_global",
-                    "name": "Global Files",
-                    "icon": "img/file.svg"
-                }
-            ]
-        },
         "commands": [
             {
-                "command": "fileShortcut.showFileList",
-                "title": "Open Files List",
                 "category": "File Shortcut",
-                "icon": "$(search)"
+                "command": "fileShortcut.showFileList",
+                "icon": "$(search)",
+                "title": "Open Files List"
             },
             {
-                "command": "fileShortcut.addCurrentFile",
-                "title": "Add Current File To List",
                 "category": "File Shortcut",
-                "icon": "$(add)"
+                "command": "fileShortcut.addCurrentFile",
+                "icon": "$(add)",
+                "title": "Add Current File To List"
             },
             {
                 "command": "fileShortcut.addCurrentFileContext",
-                "title": "File Shortcut: Add Current File To List",
-                "icon": "$(add)"
+                "icon": "$(add)",
+                "title": "File Shortcut: Add Current File To List"
             },
             {
+                "category": "File Shortcut",
                 "command": "fileShortcut.deleteFile",
-                "title": "Delete Current File From List",
-                "category": "File Shortcut",
-                "icon": "$(chrome-close)"
+                "icon": "$(chrome-close)",
+                "title": "Delete Current File From List"
             },
             {
+                "category": "File Shortcut",
                 "command": "fileShortcut.toggleFileAlias",
-                "title": "Add/Remove File Alias",
-                "category": "File Shortcut",
-                "icon": "$(word-wrap)"
+                "icon": "$(word-wrap)",
+                "title": "Add/Remove File Alias"
             },
             {
-                "command": "fileShortcut.deleteGroup",
-                "title": "Delete Group",
                 "category": "File Shortcut",
-                "icon": "$(chrome-close)"
+                "command": "fileShortcut.deleteGroup",
+                "icon": "$(chrome-close)",
+                "title": "Delete Group"
             },
             {
                 "command": "fileShortcut.changeFileGroup",
-                "title": "Change File Group",
-                "icon": "$(ungroup-by-ref-type)"
+                "icon": "$(ungroup-by-ref-type)",
+                "title": "Change File Group"
             },
             {
                 "command": "fileShortcut.renameGroup",
-                "title": "Rename Group",
-                "icon": "$(edit)"
+                "icon": "$(edit)",
+                "title": "Rename Group"
             },
             {
                 "command": "fileShortcut.openFile",
@@ -97,79 +58,71 @@
             },
             {
                 "command": "fileShortcut.sort",
-                "title": "Change List Sorting",
-                "icon": "$(sort-precedence)"
+                "icon": "$(sort-precedence)",
+                "title": "Change List Sorting"
             },
             {
                 "command": "fileShortcut.DisplayFileNameInListAs",
-                "title": "Change File Names Display",
-                "icon": "$(whole-word)"
+                "icon": "$(whole-word)",
+                "title": "Change File Names Display"
             }
         ],
+        "configuration": {
+            "properties": {
+                "fileShortcut.DisplayFileNameInListAs": {
+                    "default": 1,
+                    "description": "change how to display file labels in treeview",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "enumDescriptions": [
+                        "name + alias",
+                        "alias only"
+                    ],
+                    "type": "number"
+                },
+                "fileShortcut.hideSidebarTimeOut": {
+                    "default": 0.5,
+                    "description": "in seconds, toggle sidebar after file is opened (0 == do nothing)\n 'only works when file is opened from treeview'",
+                    "type": "number"
+                },
+                "fileShortcut.list": {
+                    "default": [],
+                    "description": "List of favorite Files. e.g /home/user/cheatsheet.md",
+                    "items": {
+                        "type": [
+                            "string",
+                            "object"
+                        ]
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                },
+                "fileShortcut.OpenInNewGroup": {
+                    "default": true,
+                    "description": "open files in new group/column next to current",
+                    "type": "boolean"
+                },
+                "fileShortcut.sort": {
+                    "default": "length",
+                    "description": "sort treeview list alphabetically or by text length",
+                    "enum": [
+                        "alpha",
+                        "length"
+                    ],
+                    "type": "string"
+                },
+                "fileShortcut.unGroupedListName": {
+                    "default": "♠❤♣♦",
+                    "description": "un-grouped list name",
+                    "type": "string"
+                }
+            },
+            "title": "File Shortcuts",
+            "type": "object"
+        },
         "menus": {
-            "editor/context": [
-                {
-                    "command": "fileShortcut.addCurrentFileContext",
-                    "when": "fscEnabled",
-                    "group": "fileshortcut"
-                }
-            ],
-            "explorer/context": [
-                {
-                    "command": "fileShortcut.addCurrentFileContext",
-                    "when": "!explorerResourceIsFolder",
-                    "group": "fileshortcut"
-                }
-            ],
-            "view/title": [
-                {
-                    "command": "fileShortcut.addCurrentFile",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscEnabled",
-                    "group": "navigation"
-                },
-                {
-                    "command": "fileShortcut.sort",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
-                    "group": "navigation"
-                },
-                {
-                    "command": "fileShortcut.DisplayFileNameInListAs",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
-                    "group": "navigation"
-                },
-                {
-                    "command": "fileShortcut.showFileList",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles",
-                    "group": "navigation"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "command": "fileShortcut.deleteFile",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/",
-                    "group": "inline"
-                },
-                {
-                    "command": "fileShortcut.toggleFileAlias",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == child",
-                    "group": "inline"
-                },
-                {
-                    "command": "fileShortcut.changeFileGroup",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/",
-                    "group": "inline"
-                },
-                {
-                    "command": "fileShortcut.deleteGroup",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent",
-                    "group": "inline"
-                },
-                {
-                    "command": "fileShortcut.renameGroup",
-                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent",
-                    "group": "inline"
-                }
-            ],
             "commandPalette": [
                 {
                     "command": "fileShortcut.addCurrentFile",
@@ -207,75 +160,122 @@
                     "command": "fileShortcut.deleteGroup",
                     "when": "false"
                 }
+            ],
+            "editor/context": [
+                {
+                    "command": "fileShortcut.addCurrentFileContext",
+                    "group": "fileshortcut",
+                    "when": "fscEnabled"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "command": "fileShortcut.addCurrentFileContext",
+                    "group": "fileshortcut",
+                    "when": "!explorerResourceIsFolder"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "fileShortcut.deleteFile",
+                    "group": "inline",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/"
+                },
+                {
+                    "command": "fileShortcut.toggleFileAlias",
+                    "group": "inline",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == child"
+                },
+                {
+                    "command": "fileShortcut.changeFileGroup",
+                    "group": "inline",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem =~ /(child|default-child)/"
+                },
+                {
+                    "command": "fileShortcut.deleteGroup",
+                    "group": "inline",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent"
+                },
+                {
+                    "command": "fileShortcut.renameGroup",
+                    "group": "inline",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && viewItem == parent"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "fileShortcut.addCurrentFile",
+                    "group": "navigation",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscEnabled"
+                },
+                {
+                    "command": "fileShortcut.sort",
+                    "group": "navigation",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles"
+                },
+                {
+                    "command": "fileShortcut.DisplayFileNameInListAs",
+                    "group": "navigation",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles"
+                },
+                {
+                    "command": "fileShortcut.showFileList",
+                    "group": "navigation",
+                    "when": "(view == fs_list_workspace || view == fs_list_global) && fscHasFiles"
+                }
             ]
         },
-        "configuration": {
-            "title": "File Shortcuts",
-            "type": "object",
-            "properties": {
-                "fileShortcut.list": {
-                    "type": "array",
-                    "items": {
-                        "type": [
-                            "string",
-                            "object"
-                        ]
-                    },
-                    "default": [],
-                    "uniqueItems": true,
-                    "description": "List of favorite Files. e.g /home/user/cheatsheet.md"
+        "views": {
+            "file-shortcut": [
+                {
+                    "icon": "img/file.svg",
+                    "id": "fs_list_workspace",
+                    "name": "Workspace Files"
                 },
-                "fileShortcut.sort": {
-                    "type": "string",
-                    "default": "length",
-                    "enum": [
-                        "alpha",
-                        "length"
-                    ],
-                    "description": "sort treeview list alphabetically or by text length"
-                },
-                "fileShortcut.hideSidebarTimeOut": {
-                    "type": "number",
-                    "default": 0.5,
-                    "description": "in seconds, toggle sidebar after file is opened (0 == do nothing)\n 'only works when file is opened from treeview'"
-                },
-                "fileShortcut.OpenInNewGroup": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "open files in new group/column next to current"
-                },
-                "fileShortcut.unGroupedListName": {
-                    "type": "string",
-                    "default": "♠❤♣♦",
-                    "description": "un-grouped list name"
-                },
-                "fileShortcut.DisplayFileNameInListAs": {
-                    "type": "number",
-                    "default": 1,
-                    "enum": [
-                        1,
-                        2
-                    ],
-                    "enumDescriptions": [
-                        "name + alias",
-                        "alias only"
-                    ],
-                    "description": "change how to display file labels in treeview"
+                {
+                    "icon": "img/file.svg",
+                    "id": "fs_list_global",
+                    "name": "Global Files"
                 }
-            }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "icon": "img/file.svg",
+                    "id": "file-shortcut",
+                    "title": "File Shortcut"
+                }
+            ]
         }
     },
+    "description": "add/open/delete your favorite file list",
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "@types/vscode": "^1.100.0",
+        "esbuild": "^0.27.4",
+        "typescript": "^5.9.3"
+    },
+    "displayName": "File Shortcut",
+    "engines": {
+        "vscode": "^1.100.0"
+    },
+    "icon": "img/file.png",
+    "keywords": [
+        "file",
+        "bookmark",
+        "shortcut"
+    ],
+    "main": "./out/main",
+    "name": "file-shortcut",
+    "publisher": "ctf0",
+    "repository": "https://github.com/ctf0/vscode-file-shortcut",
     "scripts": {
-        "vscode:prepublish": "npm run esbuild-base -- --pure:console.log --minify",
-        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "vscode:prepublish": "npm run esbuild-base -- --pure:console.log --minify",
         "watch": "npm run esbuild"
     },
-    "devDependencies": {
-        "@types/node": "^24.2.1",
-        "@types/vscode": "^1.90.0",
-        "esbuild": "^0.25.8",
-        "typescript": "^5.9.2"
-    }
+    "version": "0.4.3"
 }

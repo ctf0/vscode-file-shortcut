@@ -108,3 +108,7 @@
 
 - fix removing wrong item if it have an alias
 - remove `fileShortcut.addCurrentFileGlobal` and instead show a picker
+
+## 0.4.3
+
+- fix alias ops not working
